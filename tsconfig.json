@@ -1,21 +1,39 @@
 {
   "compilerOptions": {
+    // O código roda em Node 26. ES2023 preserva recursos modernos sem gerar
+    // transformações antigas que não precisamos manter.
     "target": "ES2023",
+    // O Node usa ESM ("type": "module" no package.json). NodeNext faz o
+    // TypeScript verificar os imports pelas mesmas regras do Node.
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    // Só o código de src/ entra no build; o JavaScript gerado vai para dist/.
     "rootDir": "src",
     "outDir": "dist",
+    // Exige tipos explícitos quando a inferência não consegue garantir segurança.
     "strict": true,
+    // Um acesso como itens[0] pode retornar undefined; precisamos tratar isso.
     "noUncheckedIndexedAccess": true,
+    // Distingue "campo ausente" de "campo presente com valor undefined".
     "exactOptionalPropertyTypes": true,
+    // Facilita o import padrão de pacotes CommonJS usados no projeto.
     "esModuleInterop": true,
+    // Não revalida as declarações internas das dependências em node_modules.
+    // Nosso código e o cliente Prisma gerado continuam sendo verificados.
     "skipLibCheck": true,
+    // Mantém imports e exports como escritos; tipos devem usar import type.
     "verbatimModuleSyntax": true,
+    // No desenvolvimento importamos arquivos .ts pelo nome real. No build,
+    // o TypeScript troca essas extensões por .js para o Node executar dist/.
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
+    // Evita diferenças de maiúsculas/minúsculas que quebrariam imports no Linux.
     "forceConsistentCasingInFileNames": true,
+    // Disponibiliza tipos globais do Node sem incluir tipos de outros ambientes.
     "types": ["node"]
   },
+  // Verifica também o cliente Prisma gerado em src/.
   "include": ["src/**/*.ts"],
+  // Evita analisar o build e as dependências como código-fonte do projeto.
   "exclude": ["dist", "node_modules"]
 }

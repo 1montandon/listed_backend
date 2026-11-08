@@ -7,6 +7,8 @@ const envSchema = z.object({
     (value) => value.startsWith("postgresql://") || value.startsWith("postgres://"),
     "DATABASE_URL deve usar PostgreSQL",
   ),
+  FRONTEND_ORIGIN: z.url(),
+  JWT_SECRET: z.string().min(32),
 });
 
 export type Env = z.output<typeof envSchema>;

@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.test.json",
     "build": "prisma generate && tsc",
+    "test": "node --env-file=.env --import tsx --test tests/*.test.ts",
     "start": "node dist/server.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -19,16 +20,24 @@
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
+    "argon2": "0.45.2",
+    "cookie": "2.0.2",
+    "cors": "2.8.6",
     "express": "^5.2.1",
+    "jose": "6.2.15",
     "pg": "^8.16.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/cors": "2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.15.5",
     "prisma": "7.10.1",
     "tsx": "^4.23.12",
     "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "argon2@0.45.2": true
   }
 }

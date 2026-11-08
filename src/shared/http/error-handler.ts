@@ -21,6 +21,13 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, _request, resp
     return;
   }
 
+  if (error instanceof SyntaxError && "status" in error && error.status === 400) {
+    response.status(400).json({
+      error: { code: "INVALID_JSON", message: "Corpo JSON inválido." },
+    });
+    return;
+  }
+
   console.error("Erro não tratado em requisição:", error);
   response.status(500).json({
     error: { code: "INTERNAL_ERROR", message: "Erro interno do servidor." },
