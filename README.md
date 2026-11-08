@@ -2,7 +2,7 @@
 
 API do MVP do Listed. Este repositório contém apenas o backend; o documento-base do produto está no projeto `listed`.
 
-**Etapa atual:** 2 de 6 — autenticação e perfil. Wishlists, extração e produtos serão implementados nas próximas etapas.
+**Etapa atual:** 3 de 6 — wishlists privadas. Extração e produtos serão implementados nas próximas etapas.
 
 ## O que já foi entregue
 
@@ -14,6 +14,7 @@ API do MVP do Listed. Este repositório contém apenas o backend; o documento-ba
 - `GET /api/v1/ready` para verificar também a conexão com o banco.
 - Build TypeScript para JavaScript executável com Node.
 - Cadastro, login, renovação de sessão, logout e consulta/edição do próprio perfil.
+- Criação, listagem, consulta, renomeação e exclusão de wishlists do usuário autenticado.
 - `tsconfig.json` comentado opção por opção para facilitar o estudo.
 
 O Prisma 7 foi escolhido por ser a versão estável da linha atual; o Prisma 8 ainda é release candidate em 08/11/2026. `prisma` e `@prisma/client` estão fixados em `7.10.1`, pois `npm install prisma` sem versão pode instalar a linha 8. O Prisma 7 com PostgreSQL usa o driver adapter `@prisma/adapter-pg`.
@@ -66,7 +67,8 @@ src/shared/http/           erro HTTP e tradução para resposta JSON
 src/shared/auth/           assinatura e verificação do access token
 src/modules/auth/          cadastro, login e sessões refresh; auth.routes.ts monta as camadas
 src/modules/users/         perfil; users.routes.ts monta as camadas
-tests/                    fluxo HTTP de autenticação e perfil
+src/modules/wishlists/     listas privadas; wishlists.routes.ts monta as camadas
+tests/                    fluxos HTTP de autenticação, perfil e wishlists
 src/generated/prisma/      cliente gerado; não editar nem versionar
 ```
 
@@ -87,7 +89,8 @@ Cada `*.routes.ts` cria o router e monta **uma** instância de repository, servi
 ```text
 app.ts
   ├─ auth.routes.ts → AuthRepository → AuthService → AuthController → authRouter
-  └─ users.routes.ts → UsersRepository → UsersService → UsersController → usersRouter
+  ├─ users.routes.ts → UsersRepository → UsersService → UsersController → usersRouter
+  └─ wishlists.routes.ts → WishlistsRepository → WishlistsService → WishlistsController → wishlistsRouter
 ```
 
 A classe, sozinha, **não garante singleton**: chamar `new AuthService(...)` outra vez criaria outra instância. O compartilhamento vem do cache de módulos ES do Node: o código no topo de cada `*.routes.ts` roda uma vez por processo e todas as requisições usam os objetos criados ali. Se no futuro houver vários processos ou réplicas, cada um terá suas próprias instâncias; o estado compartilhado de sessões continua no PostgreSQL. As dependências das classes permanecem visíveis nos construtores.
@@ -104,7 +107,7 @@ Esta é uma regra de implementação para evitar tipos duplicados ou inferência
 4. Tipos gerados pelo Prisma ficam no repository e nos mapeadores. O service recebe e devolve objetos de domínio ou DTOs claros, sem propagar tipos complexos de consultas Prisma.
 5. Evitamos `any`, assertions desnecessárias e cópias manuais de tipos que Zod ou Prisma já descrevem. Se houver uma conversão, ela será uma função nomeada e testável.
 
-Em `auth` e `users`, o controller recebe `request.body` como `unknown`, chama o schema Zod uma vez e entrega o resultado tipado ao service. O repository devolve `AuthUserRecord` ou `UserProfile`, ambos pequenos e explícitos. O campo `passwordHash` é removido pela função `toPublicUser` antes de formar a resposta. `withUser` entrega `userId` como argumento ao controller, sem alterar globalmente os tipos do Express. Os comentários em `tsconfig.json` explicam as escolhas de compilação.
+Em `auth`, `users` e `wishlists`, o controller recebe `request.body` como `unknown`, chama o schema Zod uma vez e entrega o resultado tipado ao service. Os repositories devolvem objetos pequenos e explícitos, como `UserProfile` e `WishlistSummary`; tipos de consulta Prisma ficam no repository. O campo `passwordHash` é removido pela função `toPublicUser` antes de formar a resposta. `withUser` entrega `userId` como argumento ao controller, sem alterar globalmente os tipos do Express. Os comentários em `tsconfig.json` explicam as escolhas de compilação.
 
 ## Modelos do banco
 
@@ -112,7 +115,7 @@ Em `auth` e `users`, o controller recebe `request.body` como `unknown`, chama o 
 | --- | --- | --- |
 | `User` | Conta, e-mail, nome e hash da senha | O schema Zod remove espaços e normaliza o e-mail para minúsculas antes de gravar. |
 | `RefreshSession` | Sessão de renovação revogável | Guarda **hash** do token, expiração e revogação. O token bruto só é enviado em cookie `HttpOnly`. |
-| `Wishlist` | Lista privada de um usuário | Exclusão em cascata de seus produtos. |
+| `Wishlist` | Lista privada de um usuário | Exclusão em cascata de seus produtos; a resposta inclui a contagem atual de produtos. |
 | `SavedProduct` | Produto revisado e salvo | Nome, URL e wishlist obrigatórios. Imagem, preço, moeda e loja opcionais. Links duplicados são permitidos. |
 
 `price` usa `Decimal(12,2)` no PostgreSQL. A futura API representará preços como strings decimais, evitando perda de precisão em números JavaScript. `currency` guardará o código da moeda identificado. O esquema não cria uma entidade para extração, porque a tentativa de extrair dados não precisa ser persistida no MVP.
@@ -162,6 +165,32 @@ As respostas de cadastro, login e refresh têm este formato, além do cabeçalho
 
 O refresh token nunca aparece nesse JSON. Erros comuns: 400 para dados inválidos, 401 para credenciais/token inválidos, 403 para `Origin` não permitido e 409 para e-mail já cadastrado.
 
+## Wishlists: regras e rotas da etapa 3
+
+Todas as rotas abaixo têm o prefixo `/api/v1` e exigem `Authorization: Bearer <accessToken>`. O controller valida corpo e ID com Zod. O service expressa a regra de inexistência; o repository aplica `userId` em **todas** as leituras, alterações e exclusões. Uma lista de outra conta recebe o mesmo 404 de uma lista inexistente.
+
+| Método e rota | Entrada | Resposta |
+| --- | --- | --- |
+| `POST /wishlists` | `{ "name": "Presentes" }` | 201, `{ "wishlist": ... }`. |
+| `GET /wishlists` | Nenhuma | 200, `{ "wishlists": [...] }`, da mais recente para a mais antiga. |
+| `GET /wishlists/:id` | UUID da lista | 200, `{ "wishlist": ... }`. |
+| `PATCH /wishlists/:id` | `{ "name": "Novo nome" }` | 200, `{ "wishlist": ... }`. |
+| `DELETE /wishlists/:id` | UUID da lista | 204, sem corpo. |
+
+Exemplo de objeto retornado:
+
+```json
+{
+  "id": "uuid",
+  "name": "Presentes",
+  "productCount": 0,
+  "createdAt": "2026-11-08T12:00:00.000Z",
+  "updatedAt": "2026-11-08T12:00:00.000Z"
+}
+```
+
+O nome tem de 1 a 120 caracteres depois de remover espaços nas pontas. IDs malformados e nomes inválidos retornam 400. Uma lista ausente ou pertencente a outra conta retorna 404. `GET /wishlists` retorna `[]` quando o usuário ainda não criou listas. Excluir uma wishlist remove seus produtos pela relação `onDelete: Cascade` já presente no banco; a confirmação antes da exclusão será feita no frontend. Esta etapa não exigiu nova migração.
+
 ## Verificações
 
 - `prisma generate`: passou com Prisma 7.10.1.
@@ -176,6 +205,9 @@ O computador tem Node 24.20.0 instalado; a execução em Node 26 foi validada em
 
 Também executei `npm ci`, `npm run build`, `npm run typecheck` e `npm test` em um contêiner **Node 26.13.0**; todos passaram. `npm test` usa o banco apontado pelo `.env`, portanto mantenha esse arquivo apontando para um banco de desenvolvimento ao rodá-lo.
 A API compilada em Node 26 também retornou HTTP 200 em `/health` e `/ready`.
+
+**Etapa 3:** `npm run typecheck` passou; `npm test` passou com dois testes. O novo teste usa duas contas para verificar isolamento na listagem, consulta, alteração e exclusão; valida nome e ID, confere `productCount` e confirma a exclusão em cascata de um produto. O produto é criado diretamente no teste porque sua API pertence à etapa 5.
+Também executei `npm ci`, `npm run build`, `npm run typecheck` e `npm test` em Node 26.13.0; todos passaram com os dois testes.
 
 ## Fontes técnicas
 
