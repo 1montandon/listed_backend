@@ -1,0 +1,41 @@
+[
+  {
+    "@context": "https://schema.org/",
+    "@type": "ProductGroup",
+    "name": "Travachic Vestido Regata com Recorte, Franzido e Bordado de Pétalas, Vermelho Floral, Elegante, para Férias, Verão, Festival, Estilo Country, Casual",
+    "url": "https://br.shein.com/Travachic-Vacation-Petal-Embroidery-Cutout-Ruched-Cami-Dress-Vacation-Red-Floral-Summer-Elegant-Elegant-Festival-Outfits-Country-Casual-Dresses-p-569913033.html?imgRatio=3-4&src_identifier=on%3DFLEXIBLE_LAYOUT_COMPONENT%60cn%3Dtoptrends%60hz%3Drefresh_0%60jc%3DtrendsChannel_%60ps%3D3_2_1&src_module=all&src_tab_page_id=page_home1794274498694&detailBusinessFrom=0-2&mallCode=1",
+    "image": [
+      "https://img.ltwebstatic.com/v4/j/smartflow/2026/09/24/86/1790239258bd207b93ed5fb76c9d7343239c7de132_thumbnail_900x.webp"
+    ],
+    "hasVariant": [
+      {
+        "@type": "Product",
+        "name": "Travachic Vestido Regata com Recorte, Franzido e Bordado de Pétalas, Vermelho Floral, Elegante, para Férias, Verão, Festival, Estilo Country, Casual - Tamanho XL",
+        "image": [
+          "https://img.ltwebstatic.com/v4/j/smartflow/2026/09/24/86/1790239258bd207b93ed5fb76c9d7343239c7de132_thumbnail_405x552.jpg"
+        ],
+        "size": "XL",
+        "offers": {
+          "@type": "Offer",
+          "url": "https://br.shein.com/Travachic-Vacation-Petal-Embroidery-Cutout-Ruched-Cami-Dress-Vacation-Red-Floral-Summer-Elegant-Elegant-Festival-Outfits-Country-Casual-Dresses-p-569913033.html?skucode=I5mu6ausufp4ec",
+          "price": "107.12",
+          "priceCurrency": "BRL"
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "Travachic Vestido Regata com Recorte, Franzido e Bordado de Pétalas, Vermelho Floral, Elegante, para Férias, Verão, Festival, Estilo Country, Casual - Tamanho XS",
+        "image": [
+          "https://img.ltwebstatic.com/v4/j/smartflow/2026/09/24/86/1790239258bd207b93ed5fb76c9d7343239c7de132_thumbnail_405x552.jpg"
+        ],
+        "size": "XS",
+        "offers": {
+          "@type": "Offer",
+          "url": "https://br.shein.com/Travachic-Vacation-Petal-Embroidery-Cutout-Ruched-Cami-Dress-Vacation-Red-Floral-Summer-Elegant-Elegant-Festival-Outfits-Country-Casual-Dresses-p-569913033.html?skucode=I0mu6austg96tq",
+          "price": "99.16",
+          "priceCurrency": "BRL"
+        }
+      }
+    ]
+  }
+]

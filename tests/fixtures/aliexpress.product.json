@@ -1,0 +1,22 @@
+[
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "Mouse Gamer Sem Fio KYSONA Jupiter X Ultra PAW3950 8000Hz 54L15 MCU Fibra de Carbono Composta Tri-Mode 61g Ergonômico Omron 70M - AliExpress ",
+    "image": [
+      "https://ae-pic-a1.aliexpress-media.com/kf/S9e1b7641b5964297a6210195dee8ccddL.jpg",
+      "https://ae-pic-a1.aliexpress-media.com/kf/Sb75a2d6633764cd8942cc6e744be87bao.jpg",
+      "https://ae-pic-a1.aliexpress-media.com/kf/S548de3fbce8445a0ad49a5b934fce51ct.jpg"
+    ],
+    "description": "Compre Mouse Gamer Sem Fio KYSONA Jupiter X Ultra PAW3950 8000Hz 54L15 MCU Fibra de Carbono Composta Tri-Mode 61g Ergonômico Omron 70M no Aliexpress por . Encontre mais produtos de ,  e . Desfrute do ✓ Frete Grátis em todo o mundo! ✓ Venda por tempo limitado ✓ Retorno fácil.",
+    "brand": { "@type": "Brand", "name": "KYSONA" },
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock",
+      "url": "https://pt.aliexpress.com/item/1005012524162015.html",
+      "priceCurrency": "BRL",
+      "price": "220.34"
+    },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "458" }
+  }
+]

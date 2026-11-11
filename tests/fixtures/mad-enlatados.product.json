@@ -1,0 +1,19 @@
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "name": "CAMISETA GUMMO (PRETO)",
+  "url": "https://madenlatados.com.br/products/camiseta-gummo-preto",
+  "image": ["https://madenlatados.com.br/cdn/shop/files/MG_6211copiar.jpg?v=1789588151&width=1920"],
+  "description": "Camiseta com modelagem regular, confeccionada em malha 100% algodão, com gramatura de 240g/m².Peça tag laranja\n",
+  "sku": "CAMADGUMMO-PRP",
+  "brand": { "@type": "Brand", "name": "Mad Enlatados" },
+  "offers": [
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRPP", "gtin13": 7908956230157, "availability": "http://schema.org/OutOfStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679770687" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRP", "gtin13": 7908956228529, "availability": "http://schema.org/InStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679574079" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRM", "gtin13": 7908956228536, "availability": "http://schema.org/OutOfStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679606847" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRG", "gtin13": 7908956228543, "availability": "http://schema.org/InStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679639615" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRGG", "gtin13": 7908956228550, "availability": "http://schema.org/OutOfStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679672383" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRXG", "gtin13": 7908956228567, "availability": "http://schema.org/InStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679705151" },
+    { "@type": "Offer", "sku": "CAMADGUMMO-PRXGG", "gtin13": 7908956228574, "availability": "http://schema.org/InStock", "price": 209.0, "priceCurrency": "BRL", "url": "https://madenlatados.com.br/products/camiseta-gummo-preto?variant=43847679737919" }
+  ]
+}
