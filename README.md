@@ -70,3 +70,4 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 - [E1.1 — Produto sem URL](docs/evolucao/etapa-01-produto-manual/01-url-opcional.md) — contrato atual de cadastro manual, migração e diferença entre omitir e limpar campos.
 - [E1.2 — Mover produto](docs/evolucao/etapa-01-produto-manual/02-mover-produto.md) — atualização do vínculo entre listas próprias.
 - [E2 — Miniaturas](docs/evolucao/etapa-02-miniaturas/01-resumo-de-wishlist.md) — imagens no resumo de cada wishlist.
+- [E3 — Perfil](docs/evolucao/etapa-03-perfil/01-perfil.md) — username, bio e moeda preferida.

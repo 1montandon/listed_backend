@@ -25,7 +25,7 @@ test("resumo inclui até quatro miniaturas ordenadas e isoladas por usuário", a
   }
   try {
     await prisma.user.createMany({ data: [ownerId, otherId].map((id) => ({
-      id, name: "Teste", email: `thumbs-${id}@example.com`, passwordHash: "fixture",
+      id, username: `user_${id.replaceAll("-", "").slice(0, 24)}`, name: "Teste", email: `thumbs-${id}@example.com`, passwordHash: "fixture",
     })) });
     await prisma.wishlist.createMany({ data: [
       { id: listId, userId: ownerId, name: "Origem" },

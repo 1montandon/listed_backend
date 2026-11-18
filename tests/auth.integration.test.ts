@@ -13,6 +13,7 @@ test("cadastro, login, perfil e rotação de sessão", async () => {
   const baseUrl = `http://127.0.0.1:${address.port}/api/v1`;
   const email = `auth-test-${randomUUID()}@example.com`;
   const password = "uma-senha-de-teste-segura";
+  const username = `u_${randomUUID().replaceAll("-", "").slice(0, 24)}`;
 
   async function post(path: string, body: object, cookie?: string): Promise<Response> {
     return fetch(`${baseUrl}${path}`, {
@@ -27,7 +28,7 @@ test("cadastro, login, perfil e rotação de sessão", async () => {
   }
 
   try {
-    const registered = await post("/auth/register", { name: "Pessoa Teste", email: email.toUpperCase(), password });
+    const registered = await post("/auth/register", { name: "Pessoa Teste", username, email: email.toUpperCase(), password });
     assert.equal(registered.status, 201);
     const registerBody = await registered.json();
     assert.equal(registerBody.user.email, email);
@@ -37,7 +38,7 @@ test("cadastro, login, perfil e rotação de sessão", async () => {
     assert.match(registerSetCookie ?? "", /HttpOnly/i);
     assert.match(registerSetCookie ?? "", /SameSite=Lax/i);
 
-    const duplicate = await post("/auth/register", { name: "Outra", email, password });
+    const duplicate = await post("/auth/register", { name: "Outra", username: `x_${username}`, email, password });
     assert.equal(duplicate.status, 409);
 
     const wrongPassword = await post("/auth/login", { email, password: "errada" });

@@ -1,6 +1,6 @@
 import { createAccessToken } from "../../shared/auth/access-token.ts";
 import { HttpError } from "../../shared/http/http-error.ts";
-import { AuthRepository, EmailAlreadyExistsError, type AuthUserRecord } from "./auth.repository.ts";
+import { AuthRepository, EmailAlreadyExistsError, UsernameAlreadyExistsError, type AuthUserRecord } from "./auth.repository.ts";
 import type { LoginInput, RegisterInput } from "./auth.schema.ts";
 import {
   hashPassword,
@@ -10,7 +10,7 @@ import {
   verifyPassword,
 } from "./auth.tokens.ts";
 
-type PublicUser = Pick<AuthUserRecord, "id" | "name" | "email">;
+type PublicUser = Pick<AuthUserRecord, "id" | "name" | "email" | "username" | "bio" | "preferredCurrency">;
 
 export interface AuthResult {
   user: PublicUser;
@@ -19,7 +19,7 @@ export interface AuthResult {
 }
 
 function toPublicUser(user: AuthUserRecord): PublicUser {
-  return { id: user.id, name: user.name, email: user.email };
+  return { id: user.id, name: user.name, email: user.email, username: user.username, bio: user.bio, preferredCurrency: user.preferredCurrency };
 }
 
 export class AuthService {
@@ -44,6 +44,7 @@ export class AuthService {
     try {
       const user = await this.repository.createAccountWithSession({
         name: input.name,
+        username: input.username,
         email: input.email,
         passwordHash: await hashPassword(input.password),
         tokenHash: hashRefreshToken(refreshToken),
@@ -58,6 +59,9 @@ export class AuthService {
     } catch (error) {
       if (error instanceof EmailAlreadyExistsError) {
         throw new HttpError(409, "EMAIL_ALREADY_EXISTS", "E-mail já cadastrado.");
+      }
+      if (error instanceof UsernameAlreadyExistsError) {
+        throw new HttpError(409, "USERNAME_ALREADY_EXISTS", "Username já cadastrado.");
       }
       throw error;
     }

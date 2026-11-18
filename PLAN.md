@@ -63,7 +63,7 @@ O schema Zod concentra o contrato de entrada. Quando há transformação ou coer
 
 ### Evolução após o MVP privado
 
-Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi validado e aprovado para commit no backend; a integração com o frontend continua pendente.
+Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi validado e aprovado para commit; a integração com o frontend continua pendente.
 
 | Ordem | Bloco | Ritmo |
 | --- | --- | --- |
@@ -100,9 +100,9 @@ Nos blocos E4, E5, recuperação de E6 e E7, esse ciclo vale para **cada checkpo
 | Provedor de e-mail transacional e remetente, compartilhados por recuperação e convites. | E6, antes de integrar o envio; reutilizar em E7. |
 | Domínios de produção do frontend e da API, incluindo origem e cookies. | Antes do envio de links reais em E6/E7 e da conclusão de E8. |
 | API de câmbio, atualização/cache e tratamento de indisponibilidade. | Escolher com o usuário em E4.3; BRL, USD e EUR já confirmados. |
-| Regras de username e migração das contas existentes; preços/moedas legados. | Definir antes das migrações de E3/E4, preservando dados. |
+| Preços e moedas legados. | Definir antes de E4, preservando dados. |
 | Entrega e acesso às imagens, limites e limpeza de objetos R2. | E5.1, considerando desde o início listas privadas e links públicos revogáveis. |
 | Validade dos convites, reenvio, aceite e efeito da revogação de sessões. | Revisões técnicas de E6/E7. |
 | Conteúdo e destinos de termos e privacidade. | E8, antes da publicação; não fabricar documentos finais ou consentimento. |
 
-E1.2 do backend foi commitado em `5d57dd7`. E2 do backend foi validado e aprovado para commit: [miniaturas](docs/evolucao/etapa-02-miniaturas/01-resumo-de-wishlist.md). A integração do frontend para E1.1, E1.2 e E2 permanece pendente.
+E1.2 do backend foi commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 do backend foi validado e aprovado para commit: [perfil](docs/evolucao/etapa-03-perfil/01-perfil.md). A integração do frontend para E1.1, E1.2, E2 e E3 permanece pendente.

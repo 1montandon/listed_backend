@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { displayNameSchema, usernameSchema } from "../../shared/validation/user-fields.ts";
 
 const email = z.string().trim().toLowerCase().pipe(z.email().max(320));
 
 export const registerBodySchema = z.strictObject({
-  name: z.string().trim().min(1).max(120),
+  name: displayNameSchema,
+  username: usernameSchema,
   email,
   password: z.string().min(12).max(128),
 });

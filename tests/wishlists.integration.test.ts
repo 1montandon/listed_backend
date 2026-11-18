@@ -20,7 +20,7 @@ test("wishlists privadas, contagem e exclusão em cascata", async () => {
     const response = await fetch(`${baseUrl}/auth/register`, {
       method: "POST",
       headers: { Origin: env.FRONTEND_ORIGIN, "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Pessoa Teste", email, password: "uma-senha-de-teste-segura" }),
+      body: JSON.stringify({ name: "Pessoa Teste", username: `u_${randomUUID().replaceAll("-", "").slice(0, 24)}`, email, password: "uma-senha-de-teste-segura" }),
     });
     assert.equal(response.status, 201);
     const body = await response.json();

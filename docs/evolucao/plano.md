@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 validado e aprovado para commit. Integração com o frontend pendente. Os demais checkpoints permanecem planejados. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 validado e aprovado para commit no backend. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -56,13 +56,15 @@ Adicionar ao resumo de `GET /wishlists` até quatro miniaturas com ordem determi
 
 Validar lista vazia, menos de quatro, mais de quatro, imagem ausente, contagem total independente do limite, isolamento e atualização após criar/editar/remover/mover. Buscar apenas campos necessários ao resumo, sem carregar todos os produtos de cada lista. Adaptar autorização do resumo em E7.
 
-**Andamento E2:** backend validado e aprovado para commit; [revisão do contrato](etapa-02-miniaturas/01-resumo-de-wishlist.md). Frontend ainda não integrado.
+**Andamento E2:** backend commitado em `a4d6d71`; [revisão do contrato](etapa-02-miniaturas/01-resumo-de-wishlist.md). Frontend ainda não integrado.
 
 ### E3 — Perfil e preferências (normal)
 
-Ampliar cadastro/perfil com username e bio e persistir moeda preferida. Unicidade de username deve resistir a cadastros/edições concorrentes e diferenças de caixa. Definir tamanho, caracteres, normalização e nomes reservados antes da migração. **Contas existentes não têm username:** escolher migração com o usuário, sem gerar silenciosamente identidades definitivas ou apagar contas.
+Ampliar cadastro/perfil com username e bio e persistir moeda preferida. Unicidade de username deve resistir a cadastros/edições concorrentes e diferenças de caixa. Regras definidas com o usuário: 3–30 letras sem acento, números ou `_`, salvas em minúsculas. Contas existentes recebem username derivado do nome, com sufixo numérico em conflitos. Não há nomes reservados nesta etapa.
 
 Moeda padrão BRL; escolhas BRL/USD/EUR. Definir como responder a clientes antigos e como atualizar os dados do usuário em sessão/perfil. Testar cadastro obrigatório, conflito, edição pelo dono, campo omitido versus limpo, moeda inválida e default. Alteração de moeda não modifica moeda/preço de produtos existentes. Revisão: `docs/evolucao/etapa-03-perfil/01-perfil.md`.
+
+**Andamento E3:** backend validado e aprovado para commit; [revisão de perfil](etapa-03-perfil/01-perfil.md) documenta o contrato. Migração aplicada localmente; frontend ainda não adaptado.
 
 ### E4 — Comprado, totais e câmbio (didático)
 
@@ -122,4 +124,4 @@ Executar testes relevantes por mudança e registrar comandos reais; backend usa 
 
 Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** iniciar E3 após definir as regras de username e o tratamento das contas existentes. A integração coordenada no frontend permanece pendente para E1.1, E1.2 e E2.
+**Próximo passo:** seguir para E4.1 após o commit aprovado de E3. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2 e E3.

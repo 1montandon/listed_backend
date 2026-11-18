@@ -3,12 +3,16 @@ import type { PrismaClient } from "../../generated/prisma/client.ts";
 export interface AuthUserRecord {
   id: string;
   name: string;
+  username: string;
+  bio: string | null;
+  preferredCurrency: string;
   email: string;
   passwordHash: string;
 }
 
 interface NewAccount {
   name: string;
+  username: string;
   email: string;
   passwordHash: string;
   tokenHash: string;
@@ -18,11 +22,15 @@ interface NewAccount {
 const authUserSelect = {
   id: true,
   name: true,
+  username: true,
+  bio: true,
+  preferredCurrency: true,
   email: true,
   passwordHash: true,
 } as const;
 
 export class EmailAlreadyExistsError extends Error {}
+export class UsernameAlreadyExistsError extends Error {}
 
 function isUniqueConstraintError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
@@ -36,7 +44,7 @@ export class AuthRepository {
     try {
       return await this.prisma.$transaction(async (transaction) => {
         const user = await transaction.user.create({
-          data: { name: input.name, email: input.email, passwordHash: input.passwordHash },
+          data: { name: input.name, username: input.username, email: input.email, passwordHash: input.passwordHash },
           select: authUserSelect,
         });
 
@@ -48,6 +56,8 @@ export class AuthRepository {
       });
     } catch (error) {
       if (isUniqueConstraintError(error)) {
+        const emailOwner = await this.prisma.user.findUnique({ where: { email: input.email }, select: { id: true } });
+        if (emailOwner === null) throw new UsernameAlreadyExistsError("Username já cadastrado.");
         throw new EmailAlreadyExistsError("E-mail já cadastrado.");
       }
       throw error;

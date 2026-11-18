@@ -1,6 +1,6 @@
 # Revisão E2 — Miniaturas no resumo das wishlists
 
-**Estado:** backend implementado, verificado e validado pelo usuário para commit. A integração no frontend ainda está pendente.
+**Estado:** backend validado e commitado em `a4d6d71`. A integração no frontend ainda está pendente.
 
 ## O que foi implementado
 
@@ -67,6 +67,6 @@ Para conferir pela API, crie uma lista e mais de quatro produtos com imagens dif
 
 ## Pendências
 
-- Contrato `thumbnails`, incluindo ordem e posições nulas, validado pelo usuário para commit.
+- Contrato `thumbnails`, incluindo ordem e posições nulas, validado e commitado em `a4d6d71`.
 - Adaptar o frontend para consumir o novo campo e parar de buscar todos os produtos para cada card; validar o fluxo integrado antes de encerrar E2 como funcionalidade completa. O schema atual do frontend não consome o campo.
 - A integração de E1.1 e E1.2 no frontend também continua pendente.

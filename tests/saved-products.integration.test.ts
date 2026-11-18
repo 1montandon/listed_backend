@@ -32,7 +32,7 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
     // continuam passando pela mesma verificação que os tokens da aplicação.
     await prisma.user.createMany({
       data: [ownerId, visitorId].map((id) => ({
-        id, name: "Pessoa Teste", email: `saved-${id}@example.com`, passwordHash: "fixture",
+        id, username: `user_${id.replaceAll("-", "").slice(0, 24)}`, name: "Pessoa Teste", email: `saved-${id}@example.com`, passwordHash: "fixture",
       })),
     });
     await prisma.wishlist.create({ data: { id: wishlistId, userId: ownerId, name: "Presentes" } });
