@@ -16,7 +16,9 @@ export class SavedProductsRepository {
       const row = await this.prisma.savedProduct.create({
         data: {
           name: input.name,
-          url: input.url,
+          // Na criação, ausência e null representam o mesmo dado: sem URL.
+          // No PATCH abaixo, a ausência precisa continuar significando "preservar".
+          url: input.url ?? null,
           imageUrl: input.imageUrl ?? null,
           price: input.price ?? null,
           currency: input.currency ?? null,

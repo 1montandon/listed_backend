@@ -4,7 +4,10 @@ const webUrl = z.string().trim().max(2048).pipe(z.url({ protocol: /^https?$/ }))
 
 const productFields = {
   name: z.string().trim().min(1).max(300),
-  url: webUrl,
+  // nullish aceita ausência (undefined) ou null, além de uma URL válida.
+  // Criar sem URL é permitido; editar sem enviar o campo preserva o valor.
+  // Texto vazio continua inválido: para remover a URL, envie null.
+  url: webUrl.nullish(),
   imageUrl: webUrl.nullish(),
   // Decimal(12,2) comporta até dez dígitos antes do ponto e dois depois.
   // O texto segue para o Prisma sem passar por number ou arredondamento.

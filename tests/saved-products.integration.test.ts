@@ -53,12 +53,76 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
     for (const invalidBody of [
       { name: "Sem lista", url },
       { ...minimum, name: "   " },
+      { ...minimum, url: "" },
+      { ...minimum, url: "   " },
+      { ...minimum, url: 123 },
       { ...minimum, url: "ftp://loja.example/produto" },
       { ...minimum, price: 25.5 },
       { ...minimum, price: "0.001" },
       { ...minimum, price: "10000000000.00" },
     ]) {
       assert.equal((await request(ownerToken, "/products", "POST", invalidBody)).status, 400);
+    }
+
+    // E1.1: dentro de uma lista própria, só o nome é obrigatório no produto.
+    // Os mesmos endpoints precisam distinguir campo omitido, null e texto inválido.
+    const nameOnly = { wishlistId, name: "  Presente sem link  " };
+    assert.equal((await request(visitorToken, "/products", "POST", nameOnly)).status, 404);
+    const withoutUrl = await request(ownerToken, "/products", "POST", nameOnly);
+    assert.equal(withoutUrl.status, 201);
+    const nameOnlyProduct = (await withoutUrl.json()).product;
+    assert.equal(nameOnlyProduct.name, "Presente sem link");
+    for (const field of ["url", "imageUrl", "price", "currency", "storeName"]) {
+      assert.equal(nameOnlyProduct[field], null);
+    }
+
+    const explicitNull = await request(ownerToken, "/products", "POST", { ...nameOnly, url: null });
+    assert.equal(explicitNull.status, 201);
+    const nullUrlProduct = (await explicitNull.json()).product;
+    assert.equal(nullUrlProduct.url, null);
+    const listWithoutUrls = await request(ownerToken, listPath);
+    assert.equal(listWithoutUrls.status, 200);
+    const savedWithoutUrls = (await listWithoutUrls.json()).products;
+    assert.equal(savedWithoutUrls.length, 2);
+    assert.ok(savedWithoutUrls.every((item: { url: string | null }) => item.url === null));
+
+    const nameOnlyPath = `/products/${nameOnlyProduct.id}`;
+    assert.equal((await request(visitorToken, nameOnlyPath)).status, 404);
+    assert.equal((await request(visitorToken, nameOnlyPath, "PATCH", { url })).status, 404);
+    assert.equal((await request(visitorToken, nameOnlyPath, "DELETE")).status, 404);
+
+    const addUrl = await request(ownerToken, nameOnlyPath, "PATCH", { url });
+    assert.equal(addUrl.status, 200);
+    assert.equal((await addUrl.json()).product.url, url);
+    const keepUrl = await request(ownerToken, nameOnlyPath, "PATCH", { name: "Presente revisado" });
+    assert.equal(keepUrl.status, 200);
+    assert.equal((await keepUrl.json()).product.url, url);
+
+    for (const invalidUrl of ["", "   ", "sem-protocolo", "ftp://loja.example/produto", 123]) {
+      const invalidUpdate = await request(ownerToken, nameOnlyPath, "PATCH", { url: invalidUrl });
+      assert.equal(invalidUpdate.status, 400);
+    }
+    const afterInvalidUpdate = await request(ownerToken, nameOnlyPath);
+    assert.equal((await afterInvalidUpdate.json()).product.url, url);
+
+    const removeUrl = await request(ownerToken, nameOnlyPath, "PATCH", { url: null });
+    assert.equal(removeUrl.status, 200);
+    assert.equal((await removeUrl.json()).product.url, null);
+    const reloadWithoutUrl = await request(ownerToken, nameOnlyPath);
+    assert.equal(reloadWithoutUrl.status, 200);
+    assert.equal((await reloadWithoutUrl.json()).product.url, null);
+    const persisted = await prisma.savedProduct.findUniqueOrThrow({ where: { id: nameOnlyProduct.id } });
+    assert.equal(persisted.url, null);
+    assert.equal(persisted.name, "Presente revisado");
+
+    assert.equal((await request(ownerToken, nameOnlyPath, "DELETE")).status, 204);
+    assert.equal((await request(ownerToken, `/products/${nullUrlProduct.id}`, "DELETE")).status, 204);
+
+    // A extração é outra operação: não há página para buscar sem uma URL.
+    for (const invalidExtraction of [{}, { url: null }, { url: "" }]) {
+      const extraction = await request(ownerToken, "/products/extract", "POST", invalidExtraction);
+      assert.equal(extraction.status, 400);
+      assert.equal((await extraction.json()).error.code, "VALIDATION_ERROR");
     }
 
     const manual = await request(ownerToken, "/products", "POST", minimum);
