@@ -61,6 +61,7 @@ model SavedProduct {
   price      Decimal? @db.Decimal(12, 2)
   currency   String?  @db.VarChar(3)
   storeName  String?  @map("store_name") @db.VarChar(160)
+  isPurchased Boolean @default(false) @map("is_purchased")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
   wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)

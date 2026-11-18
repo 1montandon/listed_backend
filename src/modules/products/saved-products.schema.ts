@@ -23,7 +23,11 @@ export const createSavedProductSchema = z.strictObject({
 
 // .partial torna todos os campos opcionais. Ausência preserva o dado atual,
 // e null limpa um campo que aceita nulo, como price. O ID da lista fica fora.
-export const updateSavedProductSchema = z.strictObject(productFields).partial().refine(
+export const updateSavedProductSchema = z.strictObject({
+  ...productFields,
+  // Recebemos o estado desejado, não um comando para inverter o estado atual.
+  isPurchased: z.boolean(),
+}).partial().refine(
   (input) => Object.keys(input).length > 0,
   "Envie ao menos um campo para editar.",
 );

@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 validado e aprovado para commit no backend. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 commitado em `51097f0`; E4.1 validado e aprovado para commit. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -64,7 +64,7 @@ Ampliar cadastro/perfil com username e bio e persistir moeda preferida. Unicidad
 
 Moeda padrão BRL; escolhas BRL/USD/EUR. Definir como responder a clientes antigos e como atualizar os dados do usuário em sessão/perfil. Testar cadastro obrigatório, conflito, edição pelo dono, campo omitido versus limpo, moeda inválida e default. Alteração de moeda não modifica moeda/preço de produtos existentes. Revisão: `docs/evolucao/etapa-03-perfil/01-perfil.md`.
 
-**Andamento E3:** backend validado e aprovado para commit; [revisão de perfil](etapa-03-perfil/01-perfil.md) documenta o contrato. Migração aplicada localmente; frontend ainda não adaptado.
+**Andamento E3:** backend commitado em `51097f0`; [revisão de perfil](etapa-03-perfil/01-perfil.md) documenta o contrato. Migração aplicada localmente; frontend ainda não adaptado.
 
 ### E4 — Comprado, totais e câmbio (didático)
 
@@ -74,6 +74,8 @@ Moeda padrão BRL; escolhas BRL/USD/EUR. Definir como responder a clientes antig
 | E4.2 — Totais sem câmbio | Separar falta comprar e total; trabalhar primeiro com uma moeda e valores decimais. Definir contrato de totais e itens não incluídos. | Lista vazia, zero, valores ausentes, todos comprados, mistura de moedas ainda sem conversão e precisão da soma. |
 | E4.3 — Escolha e consulta de câmbio | Comparar provedores com o usuário e documentação atual: BRL/USD/EUR, licença de uso, atualização, limites e custo. Definir consulta, cache e falhas antes de integrar. | Origem/data da cotação observáveis; nenhuma cotação estática do Figma; validar resposta externa e conversão identidade sem chamada desnecessária. |
 | E4.4 — Conversão e integração | Converter para moeda preferida; definir precisão, arredondamento, atualização e apresentação de totais parciais. | Taxa/direção com exemplos conhecidos, indisponibilidade, ausência de moeda/taxa, troca de preferência, comprado alterando só falta comprar e preço original preservado. |
+
+**Andamento E4.1:** backend validado e aprovado para commit; [revisão de comprado](etapa-04-comprado-e-totais/01-comprado.md) documenta o contrato. Migração aplicada localmente. Frontend não integrado.
 
 Detalhar antes de E4.2 o tratamento de produtos legados com moeda desconhecida ou preço sem moeda; não adivinhar BRL. Usar fixture identificada para testes de taxas e registrar separadamente a consulta real. Chave de provedor não deve ir para o frontend. Local de agregação e formato HTTP serão decididos no contrato, sem biblioteca/provedor pré-selecionado neste plano.
 
@@ -124,4 +126,4 @@ Executar testes relevantes por mudança e registrar comandos reais; backend usa 
 
 Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** seguir para E4.1 após o commit aprovado de E3. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2 e E3.
+**Próximo passo:** seguir para E4.2 após o commit de E4.1. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2 e E3.

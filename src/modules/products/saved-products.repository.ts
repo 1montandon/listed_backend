@@ -73,6 +73,9 @@ export class SavedProductsRepository {
     if (input.price !== undefined) data.price = input.price;
     if (input.currency !== undefined) data.currency = input.currency;
     if (input.storeName !== undefined) data.storeName = input.storeName;
+    // false é um valor válido; checar apenas `if (input.isPurchased)` perderia
+    // a intenção de desmarcar. undefined representa campo omitido.
+    if (input.isPurchased !== undefined) data.isPurchased = input.isPurchased;
 
     try {
       const row = await this.prisma.savedProduct.update({

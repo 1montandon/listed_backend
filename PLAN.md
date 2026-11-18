@@ -63,7 +63,7 @@ O schema Zod concentra o contrato de entrada. Quando há transformação ou coer
 
 ### Evolução após o MVP privado
 
-Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi validado e aprovado para commit; a integração com o frontend continua pendente.
+Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi validado e commitado em `51097f0`; E4.1 foi validado e aprovado para commit; a integração com o frontend continua pendente.
 
 | Ordem | Bloco | Ritmo |
 | --- | --- | --- |
@@ -105,4 +105,4 @@ Nos blocos E4, E5, recuperação de E6 e E7, esse ciclo vale para **cada checkpo
 | Validade dos convites, reenvio, aceite e efeito da revogação de sessões. | Revisões técnicas de E6/E7. |
 | Conteúdo e destinos de termos e privacidade. | E8, antes da publicação; não fabricar documentos finais ou consentimento. |
 
-E1.2 do backend foi commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 do backend foi validado e aprovado para commit: [perfil](docs/evolucao/etapa-03-perfil/01-perfil.md). A integração do frontend para E1.1, E1.2, E2 e E3 permanece pendente.
+E1.2 do backend foi commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi commitado em `51097f0`. E4.1 foi validado e aprovado para commit: [comprado](docs/evolucao/etapa-04-comprado-e-totais/01-comprado.md). A integração do frontend para E1.1, E1.2, E2, E3 e E4.1 permanece pendente.

@@ -1,6 +1,6 @@
 # Revisão E3 — Username, bio e moeda preferida
 
-**Estado:** backend implementado, testado e validado pelo usuário para commit. A migração foi aplicada ao PostgreSQL local. O frontend ainda precisa ser adaptado.
+**Estado:** backend implementado, testado e validado e commitado em `51097f0`. A migração foi aplicada ao PostgreSQL local. O frontend ainda precisa ser adaptado.
 
 ## O que mudou
 
@@ -82,7 +82,7 @@ Para testar manualmente, cadastre uma conta com username maiúsculo e confira a 
 
 ## Pendências e impacto no frontend
 
-- E3 foi validado pelo usuário para commit.
+- E3 foi validado e commitado em `51097f0`.
 - **O cadastro atual do frontend ainda não envia username:** com este backend, ele recebe 400 até ser adaptado. O frontend também precisa apresentar e editar os campos novos e tratar conflito de username. A integração ainda não foi executada.
 - E1.1, E1.2 e E2 também aguardam integração coordenada no frontend. Nenhum preço foi convertido.
 - Reverter a migração de produção exige planejar o tratamento dos dados adicionados; não executamos rollback nem deploy.

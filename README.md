@@ -71,3 +71,4 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 - [E1.2 — Mover produto](docs/evolucao/etapa-01-produto-manual/02-mover-produto.md) — atualização do vínculo entre listas próprias.
 - [E2 — Miniaturas](docs/evolucao/etapa-02-miniaturas/01-resumo-de-wishlist.md) — imagens no resumo de cada wishlist.
 - [E3 — Perfil](docs/evolucao/etapa-03-perfil/01-perfil.md) — username, bio e moeda preferida.
+- [E4.1 — Comprado](docs/evolucao/etapa-04-comprado-e-totais/01-comprado.md) — estado de compra no produto.
