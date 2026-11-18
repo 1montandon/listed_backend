@@ -6,9 +6,9 @@
  * forwardHttp repassa mensagens HTTP. openTunnel repassa bytes HTTPS para
  * que Chromium continue negociando TLS e verificando o certificado da loja.
  *
- * Leia README.md#rede-e-proxy para IP, DNS, sockets e TCP. Em seguida, veja
- * start para entender onde os pedidos entram, forwardHttp e openTunnel para
- * acompanhar cada caminho, e close para entender como encerramos os dois.
+ * Veja IP, DNS, sockets e TCP em docs/etapas-iniciais/04-extracao-de-produtos.md#rede-e-proxy.
+ * Leia start para entender onde os pedidos entram, forwardHttp e openTunnel
+ * para acompanhar cada caminho, e close para ver como encerramos os dois.
  */
 import { createServer, request as requestHttp } from "node:http";
 import type { IncomingHttpHeaders, IncomingMessage, Server, ServerResponse } from "node:http";

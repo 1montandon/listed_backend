@@ -16,7 +16,7 @@ import type {
 /**
  * ORQUESTRAÇÃO: este service decide QUANDO buscar de outra forma.
  * O loader carrega páginas; Cheerio lê os dados; o service escolhe o resultado.
- * Roteiro de estudo: README.md#fluxo-da-extracao. Depois abra o loader.fetch.
+ * Roteiro de estudo em docs/etapas-iniciais/04-extracao-de-produtos.md#fluxo-da-extracao.
  */
 export class ProductsService {
   constructor(private readonly pages: PageLoader) {}

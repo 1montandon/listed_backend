@@ -8,7 +8,7 @@
  * parseProductPage e depois acompanhe os auxiliares conforme são chamados.
  * Exemplo do caminho: <script>{"name":"Camisa"}</script> → texto → objeto.
  * A explicação de Cheerio/JSON-LD e o exemplo completo estão em:
- * README.md#lendo-o-produto. Sintaxe TS: README.md#conceitos-de-typescript.
+ * docs/etapas-iniciais/04-extracao-de-produtos.md#lendo-o-produto e #conceitos-de-typescript.
  */
 // * as cheerio reúne as funções exportadas pelo pacote sob esse nome.
 // Por isso chamamos cheerio.loadBuffer, em vez de importar só loadBuffer.

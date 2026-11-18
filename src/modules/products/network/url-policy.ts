@@ -11,7 +11,7 @@
  * São duas etapas porque um domínio aparentemente normal pode apontar para
  * 127.0.0.1 ou 10.0.0.2. Ao conectar nesses endereços, o backend alcançaria
  * seu próprio ambiente ou uma rede privada. O Listed restringe a coleta a
- * páginas da web em endereços públicos. Veja README.md#rede-e-proxy.
+ * páginas da web em endereços públicos. Veja docs/etapas-iniciais/04-extracao-de-produtos.md#rede-e-proxy.
  */
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";

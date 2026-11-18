@@ -9,7 +9,7 @@
  * Leia nesta ordem: validateUrl → fetch e seus auxiliares → render.
  * Detalhes de URL/DNS/proxy ficam em network/. Os comentários explicam
  * as APIs no ponto de uso. A teoria e um exemplo completo ficam no roteiro:
- * README.md#carregando-o-html e README.md#rede-e-proxy.
+ * docs/etapas-iniciais/04-extracao-de-produtos.md#carregando-o-html e #rede-e-proxy.
  */
 import { setTimeout as delay } from "node:timers/promises";
 import { Agent, fetch } from "undici";
@@ -143,7 +143,7 @@ export class ProductPageLoader implements PageLoader {
   /**
    * ETAPA 3b: IP aprovado → Agent configurado. Ainda não há pedido HTTP.
    * O Agent fixa o endereço aprovado: uma segunda consulta DNS não pode mudá-lo.
-   * A explicação completa está no README, seção Rede e proxy.
+   * Veja a seção de rede em docs/etapas-iniciais/04-extracao-de-produtos.md#rede-e-proxy.
    * connect.lookup é um ponto de configuração fornecido por Undici/Node:
    * quando a conexão precisar do IP, ela chamará nossa função abaixo.
    */

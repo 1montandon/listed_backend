@@ -1,19 +1,19 @@
 # Revisão E1.1 — Produto manual sem URL
 
-**Data:** 18/11/2026. **Estado:** backend implementado, verificado e validado pelo usuário para commit. Migração aplicada ao PostgreSQL local. Frontend ainda não adaptado. E1.2 (movimentação) não foi iniciado.
+**Data:** 18/11/2026. **Estado:** backend implementado, verificado e validado pelo usuário e commitado em `678aab2`. Migração aplicada ao PostgreSQL local. Frontend ainda não adaptado. E1.2 (movimentação) não foi iniciado.
 
 ## 1. Objetivo e o que foi implementado
 
-Agora é possível cadastrar um produto apenas com `name`, dentro de uma wishlist própria identificada por `wishlistId`. URL, imagem, preço, moeda e loja podem ficar ausentes. Os endpoints e as permissões são os mesmos da [etapa 5](revisao-produtos-salvos.md); esta revisão descreve somente a mudança de URL obrigatória para opcional.
+Agora é possível cadastrar um produto apenas com `name`, dentro de uma wishlist própria identificada por `wishlistId`. URL, imagem, preço, moeda e loja podem ficar ausentes. Os endpoints e as permissões são os mesmos da [etapa 5](../../etapas-iniciais/05-produtos-salvos.md); esta revisão descreve somente a mudança de URL obrigatória para opcional.
 
 | Arquivo | Alteração |
 | --- | --- |
-| [prisma/schema.prisma](../prisma/schema.prisma) | `SavedProduct.url` passou de `String` para `String?`. |
-| [migration.sql](../prisma/migrations/20261118000000_saved_product_url_optional/migration.sql) | Retira a restrição `NOT NULL` da coluna existente. |
-| [saved-products.schema.ts](../src/modules/products/saved-products.schema.ts) | Aceita URL omitida ou null; valida o endereço quando informado. |
-| [saved-products.repository.ts](../src/modules/products/saved-products.repository.ts) | Converte ausência em null na criação. O PATCH já preservava campos omitidos. |
-| [saved-products.integration.test.ts](../tests/saved-products.integration.test.ts) | Exercita cadastro sem URL, edição, limpeza, persistência, erros e acesso entre contas. |
-| [saved-products-url-migration.test.ts](../tests/saved-products-url-migration.test.ts) | Aplica as migrações sobre um produto antigo e verifica preservação dos dados. |
+| [prisma/schema.prisma](../../../prisma/schema.prisma) | `SavedProduct.url` passou de `String` para `String?`. |
+| [migration.sql](../../../prisma/migrations/20261118000000_saved_product_url_optional/migration.sql) | Retira a restrição `NOT NULL` da coluna existente. |
+| [saved-products.schema.ts](../../../src/modules/products/saved-products.schema.ts) | Aceita URL omitida ou null; valida o endereço quando informado. |
+| [saved-products.repository.ts](../../../src/modules/products/saved-products.repository.ts) | Converte ausência em null na criação. O PATCH já preservava campos omitidos. |
+| [saved-products.integration.test.ts](../../../tests/saved-products.integration.test.ts) | Exercita cadastro sem URL, edição, limpeza, persistência, erros e acesso entre contas. |
+| [saved-products-url-migration.test.ts](../../../tests/saved-products-url-migration.test.ts) | Aplica as migrações sobre um produto antigo e verifica preservação dos dados. |
 
 Controller, service e scraper não precisaram de uma nova implementação. Os tipos de entrada continuam inferidos pelo Zod e o tipo de resposta acompanha o modelo gerado pelo Prisma; não adicionamos outra definição de produto para manter manualmente.
 
@@ -93,11 +93,11 @@ O rollback da migração em produção não seria apenas restaurar `NOT NULL`: d
 
 ## 4. O que ler, em ordem
 
-1. `SavedProduct` no [modelo Prisma](../prisma/schema.prisma) e o [SQL da migração](../prisma/migrations/20261118000000_saved_product_url_optional/migration.sql): regra do banco.
-2. `productFields.url` no [schema](../src/modules/products/saved-products.schema.ts): contrato recebido pela API e tipo inferido pelo Zod.
-3. `createInOwnedWishlist` e `updateOwned` no [repository](../src/modules/products/saved-products.repository.ts): conversão de ausência e diferença entre criar/editar.
-4. Trecho E1.1 no [teste HTTP](../tests/saved-products.integration.test.ts): exemplos de pedidos e resultados, incluindo requisições feitas por outra conta.
-5. [Teste de migração](../tests/saved-products-url-migration.test.ts): preservação de produto antigo e isolamento das tabelas de teste.
+1. `SavedProduct` no [modelo Prisma](../../../prisma/schema.prisma) e o [SQL da migração](../../../prisma/migrations/20261118000000_saved_product_url_optional/migration.sql): regra do banco.
+2. `productFields.url` no [schema](../../../src/modules/products/saved-products.schema.ts): contrato recebido pela API e tipo inferido pelo Zod.
+3. `createInOwnedWishlist` e `updateOwned` no [repository](../../../src/modules/products/saved-products.repository.ts): conversão de ausência e diferença entre criar/editar.
+4. Trecho E1.1 no [teste HTTP](../../../tests/saved-products.integration.test.ts): exemplos de pedidos e resultados, incluindo requisições feitas por outra conta.
+5. [Teste de migração](../../../tests/saved-products-url-migration.test.ts): preservação de produto antigo e isolamento das tabelas de teste.
 
 O controller e o service continuam seguindo o fluxo explicado na revisão da etapa 5. Não é preciso reaprender o módulo inteiro para acompanhar esta mudança.
 
@@ -137,7 +137,7 @@ Roteiro pela API, usando uma conta de desenvolvimento e uma lista própria:
 
 ## 6. Pendências e limites
 
-- Commit do backend aprovado pelo usuário; a integração com o frontend permanece pendente.
+- Backend commitado em `678aab2`; a integração com o frontend permanece pendente.
 - Adaptar o frontend após a revisão do contrato: `products.schemas.ts` ainda exige URL na resposta e no formulário; `ProductActions.vue` ainda exibe o link. Um produto sem URL pode fazer o cliente atual rejeitar a resposta da lista. Não considerar a funcionalidade integrada concluída antes dessa adaptação e validação.
 - Preservar e revisar separadamente o debug de DNS, que continua afetando a suíte local.
 - E1.2 (movimentação) permanece planejado, sem rota, transação ou interface implementada aqui.

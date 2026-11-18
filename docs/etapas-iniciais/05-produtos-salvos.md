@@ -2,7 +2,7 @@
 
 ## O que foi implementado
 
-A API salva dados revisados ou manuais, lista os produtos de uma wishlist e permite consultar, editar e remover cada item. As rotas foram ligadas em `app.ts` e `products.routes.ts`. A persistência usa os arquivos `saved-products.*.ts` e o modelo `SavedProduct` da migração inicial. [Rotas](../src/modules/products/products.routes.ts) · [Teste](../tests/saved-products.integration.test.ts)
+A API salva dados revisados ou manuais, lista os produtos de uma wishlist e permite consultar, editar e remover cada item. As rotas foram ligadas em `app.ts` e `products.routes.ts`. A persistência usa os arquivos `saved-products.*.ts` e o modelo `SavedProduct` da migração inicial. [Rotas](../../src/modules/products/products.routes.ts) · [Teste](../../tests/saved-products.integration.test.ts)
 
 ## Como funciona
 
@@ -40,13 +40,13 @@ A resposta inclui `id`, `wishlistId`, `createdAt` e `updatedAt`. Imagem, preço,
 
 ## O que ler
 
-1. Comece pelo schema para ver os campos obrigatórios e a diferença entre omissão e `null` no `PATCH`. [saved-products.schema.ts](../src/modules/products/saved-products.schema.ts)
-2. Siga do controller até o service. Veja de onde vem o `userId` e como a API escolhe os erros de recurso ausente. [saved-products.controller.ts](../src/modules/products/saved-products.controller.ts) · [saved-products.service.ts](../src/modules/products/saved-products.service.ts)
-3. Acompanhe o filtro pelo dono, a relação com a wishlist e a serialização do preço. [saved-products.repository.ts](../src/modules/products/saved-products.repository.ts)
+1. Comece pelo schema para ver os campos obrigatórios e a diferença entre omissão e `null` no `PATCH`. [saved-products.schema.ts](../../src/modules/products/saved-products.schema.ts)
+2. Siga do controller até o service. Veja de onde vem o `userId` e como a API escolhe os erros de recurso ausente. [saved-products.controller.ts](../../src/modules/products/saved-products.controller.ts) · [saved-products.service.ts](../../src/modules/products/saved-products.service.ts)
+3. Acompanhe o filtro pelo dono, a relação com a wishlist e a serialização do preço. [saved-products.repository.ts](../../src/modules/products/saved-products.repository.ts)
 
 ## Como testar
 
-Com o banco configurado conforme o [README](../README.md#rodar-localmente), rode o teste com duas contas. Ele cobre dados mínimos, valores inválidos, URL duplicada, edição, exclusão e isolamento.
+Com o banco configurado conforme o [README](../../README.md#rodar-localmente), rode o teste com duas contas. Ele cobre dados mínimos, valores inválidos, URL duplicada, edição, exclusão e isolamento.
 
 ```powershell
 node --env-file=.env --import tsx --test tests/saved-products.integration.test.ts
@@ -60,4 +60,4 @@ Em 18/11/2026, antes do commit aprovado, build, typecheck e 67/67 testes passara
 
 ## Pendências
 
-Etapa validada pelo usuário em 18/11/2026, com aprovação explícita para commit e avanço. O próximo checkpoint autorizado é E1.1 (URL opcional); o contrato descrito nesta revisão é o da etapa 5, ainda com URL obrigatória. As novas entregas terão revisões próprias. [Plano](../PLAN.md)
+Etapa validada pelo usuário em 18/11/2026, com aprovação explícita para commit e avanço. O próximo checkpoint autorizado é E1.1 (URL opcional); o contrato descrito nesta revisão é o da etapa 5, ainda com URL obrigatória. As novas entregas terão revisões próprias. [Plano](../../PLAN.md)
