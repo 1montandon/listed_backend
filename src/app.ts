@@ -5,7 +5,7 @@ import { prisma } from "./db/prisma.ts";
 import { authRouter } from "./modules/auth/auth.routes.ts";
 import { usersRouter } from "./modules/users/users.routes.ts";
 import { wishlistsRouter } from "./modules/wishlists/wishlists.routes.ts";
-import { productsRouter } from "./modules/products/products.routes.ts";
+import { productsRouter, wishlistProductsRouter } from "./modules/products/products.routes.ts";
 import { errorHandler } from "./shared/http/error-handler.ts";
 import { HttpError } from "./shared/http/http-error.ts";
 
@@ -30,7 +30,7 @@ app.get("/api/v1/ready", async (_request, response) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1", usersRouter);
-app.use("/api/v1/wishlists", wishlistsRouter);
+app.use("/api/v1/wishlists", wishlistsRouter, wishlistProductsRouter);
 app.use("/api/v1/products", productsRouter);
 
 app.use(() => {
