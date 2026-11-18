@@ -28,6 +28,7 @@ productsRouter.use((_request, response, next) => {
 
 productsRouter.post("/extract", withUser(controller.extract));
 productsRouter.post("/", withUser(savedProductsController.create));
+productsRouter.post("/:id/move", withUser(savedProductsController.move));
 productsRouter.get("/:id", withUser(savedProductsController.get));
 productsRouter.patch("/:id", withUser(savedProductsController.update));
 productsRouter.delete("/:id", withUser(savedProductsController.delete));

@@ -1,6 +1,6 @@
 import type { AuthenticatedHandler } from "../../shared/http/with-user.ts";
 import { wishlistIdSchema } from "../wishlists/wishlists.schema.ts";
-import { createSavedProductSchema, savedProductIdSchema, updateSavedProductSchema } from "./saved-products.schema.ts";
+import { createSavedProductSchema, moveSavedProductSchema, savedProductIdSchema, updateSavedProductSchema } from "./saved-products.schema.ts";
 import { SavedProductsService } from "./saved-products.service.ts";
 
 export class SavedProductsController {
@@ -37,5 +37,13 @@ export class SavedProductsController {
     const productId = savedProductIdSchema.parse(request.params.id);
     await this.service.delete(userId, productId);
     response.status(204).end();
+  };
+
+  readonly move: AuthenticatedHandler = async (request, response, userId) => {
+    const productId = savedProductIdSchema.parse(request.params.id);
+    const body: unknown = request.body;
+    const input = moveSavedProductSchema.parse(body);
+    const product = await this.service.move(userId, productId, input.destinationWishlistId);
+    response.json({ product });
   };
 }

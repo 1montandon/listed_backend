@@ -38,6 +38,7 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 | Wishlists | `POST /wishlists`, `GET /wishlists`, `GET/PATCH/DELETE /wishlists/:id` |
 | Prévia de produto | `POST /products/extract` |
 | Produtos salvos | `POST /products`, `GET /wishlists/:id/products`, `GET/PATCH/DELETE /products/:id` |
+| Movimentação | `POST /products/:id/move` |
 
 ## Comandos
 
@@ -67,3 +68,4 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 
 - [Plano de evolução](docs/evolucao/plano.md) — etapas E1 a E8 e seus checkpoints.
 - [E1.1 — Produto sem URL](docs/evolucao/etapa-01-produto-manual/01-url-opcional.md) — contrato atual de cadastro manual, migração e diferença entre omitir e limpar campos.
+- [E1.2 — Mover produto](docs/evolucao/etapa-01-produto-manual/02-mover-produto.md) — atualização do vínculo entre listas próprias.

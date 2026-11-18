@@ -4,6 +4,13 @@ import type { CreateSavedProductInput, UpdateSavedProductInput } from "./saved-p
 // Omit reaproveita os campos da linha do Prisma, trocando só o tipo de price.
 export type SavedProductView = Omit<SavedProduct, "price"> & { price: string | null };
 
+type MoveResult =
+  | { status: "moved"; product: SavedProductView }
+  | { status: "product-not-found" }
+  | { status: "wishlist-not-found" }
+  | { status: "same-wishlist" }
+  | { status: "conflict" };
+
 function toView(row: SavedProduct): SavedProductView {
   return { ...row, price: row.price?.toFixed(2) ?? null };
 }
@@ -85,5 +92,40 @@ export class SavedProductsRepository {
     // se havia um produto que atendia ao filtro, sem outra consulta.
     const result = await this.prisma.savedProduct.deleteMany({ where: { id, wishlist: { userId } } });
     return result.count === 1;
+  }
+
+  async moveOwned(userId: string, id: string, destinationWishlistId: string): Promise<MoveResult> {
+    try {
+      return await this.prisma.$transaction(async (transaction): Promise<MoveResult> => {
+        const original = await transaction.savedProduct.findUnique({
+          where: { id, wishlist: { userId } },
+        });
+        if (original === null) return { status: "product-not-found" };
+
+        if (original.wishlistId === destinationWishlistId) return { status: "same-wishlist" };
+
+        const destination = await transaction.wishlist.findUnique({
+          where: { id: destinationWishlistId, userId },
+          select: { id: true },
+        });
+        if (destination === null) return { status: "wishlist-not-found" };
+
+        // O filtro inclui a lista observada: se outro pedido mover o produto
+        // depois da leitura, esta escrita não sobrescreve a movimentação dele.
+        // connect também exige que o destino ainda pertença ao usuário.
+        const moved = await transaction.savedProduct.update({
+          where: { id, wishlistId: original.wishlistId, wishlist: { userId } },
+          data: { wishlist: { connect: { id: destination.id, userId } } },
+        });
+        return { status: "moved", product: toView(moved) };
+      });
+    } catch (error) {
+      // O produto ou destino pode ter mudado após as consultas. A transação
+      // não confirma uma alteração parcial; o cliente pode atualizar a tela.
+      if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2025", "P2018", "P2003"].includes(error.code)) {
+        return { status: "conflict" };
+      }
+      throw error;
+    }
   }
 }

@@ -30,5 +30,10 @@ export const updateSavedProductSchema = z.strictObject(productFields).partial().
 
 export const savedProductIdSchema = z.uuid();
 
+export const moveSavedProductSchema = z.strictObject({
+  destinationWishlistId: z.uuid(),
+});
+
 export type CreateSavedProductInput = z.output<typeof createSavedProductSchema>;
 export type UpdateSavedProductInput = z.output<typeof updateSavedProductSchema>;
+export type MoveSavedProductInput = z.output<typeof moveSavedProductSchema>;

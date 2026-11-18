@@ -41,4 +41,17 @@ export class SavedProductsService {
     const deleted = await this.repository.deleteOwned(userId, id);
     if (!deleted) throw productNotFound();
   }
+
+  async move(userId: string, id: string, destinationWishlistId: string): Promise<SavedProductView> {
+    const result = await this.repository.moveOwned(userId, id, destinationWishlistId);
+    if (result.status === "product-not-found") throw productNotFound();
+    if (result.status === "wishlist-not-found") throw wishlistNotFound();
+    if (result.status === "same-wishlist") {
+      throw new HttpError(400, "SAME_WISHLIST", "Escolha uma lista diferente da lista atual.");
+    }
+    if (result.status === "conflict") {
+      throw new HttpError(409, "MOVE_CONFLICT", "O produto ou a lista mudou durante a movimentação. Tente novamente.");
+    }
+    return result.product;
+  }
 }

@@ -63,11 +63,11 @@ O schema Zod concentra o contrato de entrada. Quando há transformação ou coer
 
 ### Evolução após o MVP privado
 
-Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. A integração com o frontend continua pendente; os demais checkpoints estão planejados.
+Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 está implementado no backend e aguarda revisão; a integração com o frontend continua pendente.
 
 | Ordem | Bloco | Ritmo |
 | --- | --- | --- |
-| E1 | Produto manual só com nome e mover por criação/exclusão atômicas. | Normal, duas entregas. |
+| E1 | Produto manual só com nome e mover pela atualização do vínculo com a lista. | Normal, duas entregas. |
 | E2 | Até quatro miniaturas no resumo das wishlists. | Normal. |
 | E3 | Username, bio e preferência de moeda. | Normal. |
 | E4 | Marcar/desmarcar comprado, falta comprar, total e câmbio. | Didático, pausado. |
@@ -105,4 +105,4 @@ Nos blocos E4, E5, recuperação de E6 e E7, esse ciclo vale para **cada checkpo
 | Validade dos convites, reenvio, aceite e efeito da revogação de sessões. | Revisões técnicas de E6/E7. |
 | Conteúdo e destinos de termos e privacidade. | E8, antes da publicação; não fabricar documentos finais ou consentimento. |
 
-Etapa 5 aprovada e commitada. E1.1 do backend foi validado e commitado em `678aab2`, com migração local aplicada. Integração do frontend e E1.2 não foram iniciados. Aguardar a próxima orientação do usuário antes de avançar.
+Etapa 5 e E1.1 do backend foram commitados. E1.2 do backend foi implementado e validado pelo usuário e aprovado para commit: [movimentação](docs/evolucao/etapa-01-produto-manual/02-mover-produto.md). A integração do frontend para E1.1 e E1.2 permanece pendente.

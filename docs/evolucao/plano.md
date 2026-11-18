@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 validado e commitado no backend em `678aab2`; integração com o frontend pendente. Os demais checkpoints permanecem planejados. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 implementado no backend e aguardando revisão. Integração com o frontend pendente. Os demais checkpoints permanecem planejados. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -20,7 +20,7 @@ Revisões devem conter: objetivo; comportamento; decisões/alternativas; arquivo
 
 - Cada produto pertence a uma única wishlist. Não haverá muitos para muitos entre produtos e listas. Registros semelhantes em listas distintas são independentes.
 - Produto manual exige apenas nome como dado do produto, dentro de uma wishlist válida. URL, imagem, preço/moeda e loja são opcionais; extração continua exigindo URL.
-- Mover cria outro registro no destino e apaga o original em uma transação. Só o dono pode mover entre listas próprias. Não executar duas requisições de criação/exclusão no frontend.
+- Mover atualiza o vínculo do mesmo produto para a lista de destino. Só o dono pode mover entre listas próprias. O ID e a data de criação permanecem; a data de atualização muda.
 - Comprado significa marcar/desmarcar; não há valor pago separado nem compra processada pela aplicação.
 - Mostrar separadamente falta comprar (não comprados) e total da lista (todos). Preservar valores originais. Preferência de moeda inicialmente BRL, opções BRL/USD/EUR. Escolher provedor de câmbio com o usuário.
 - Username obrigatório no cadastro, único sem distinguir maiúsculas/minúsculas e editável no perfil. Não cria perfil público. Bio opcional; e-mail permanece somente leitura neste recorte.
@@ -33,7 +33,7 @@ Revisões devem conter: objetivo; comportamento; decisões/alternativas; arquivo
 
 Manter listas privadas por padrão; dono ativa/desativa/renova o link público e gerencia participantes. Editor pode gerenciar produtos e marcar comprado, mas não mover, excluir a lista ou conceder acesso. Visitante só lê. Totais compartilhados usam a moeda do dono. Essas bases, discutidas na conversa, serão convertidas em contratos na revisão de E7.1; prazos e detalhes ainda não foram escolhidos.
 
-Ao mover, propor preservar todos os dados de negócio, inclusive comprado e imagem, retornando novo ID; definir timestamps na revisão de E1.2. Falha de foto não deve desfazer cadastro válido. Itens sem preço/moeda/cotação não devem ser tratados como zero nem produzir total completo enganoso. Definir a apresentação dos totais parciais em E4.
+Ao mover, preservar o registro e todos os dados de negócio, inclusive comprado e imagem quando existirem. Falha de foto não deve desfazer cadastro válido. Itens sem preço/moeda/cotação não devem ser tratados como zero nem produzir total completo enganoso. Definir a apresentação dos totais parciais em E4.
 
 ## 3. Entregas e critérios
 
@@ -42,11 +42,13 @@ Ao mover, propor preservar todos os dados de negócio, inclusive comprado e imag
 | Checkpoint | Implementação | Critérios de aceite |
 | --- | --- | --- |
 | E1.1 — URL opcional | Migração preservando registros; schema, persistência e resposta com URL anulável. Manter URL obrigatória na extração. | Criar só com nome em lista própria; editar/remover URL; distinguir omissão de null; rejeitar URL inválida quando enviada; regressão da extração e isolamento entre contas. |
-| E1.2 — Mover | Definir operação única de movimentação e contrato com destino; validar propriedade das duas listas e criar/excluir dentro da mesma transação. Manter relação 1:N. | Falha entre criação e exclusão causa rollback; origem alheia, destino alheio/inexistente e destino igual rejeitados; movimento válido gera novo ID, remove original e atualiza contagens. Testar duas tentativas concorrentes para não duplicar o movimento. |
+| E1.2 — Mover | Definir operação única de movimentação e contrato com destino; validar propriedade das duas listas e atualizar o vínculo. Manter relação 1:N. | Origem alheia, destino alheio/inexistente e destino igual rejeitados; movimento válido preserva ID e criação e atualiza contagens. Testar tentativas concorrentes. |
 
-A regra de movimento permanece restrita ao dono mesmo após E7. Quando E4/E5 adicionarem campos/referências, atualizar a cópia transacional e seus testes. A transferência de referência de imagem não pode disparar limpeza do objeto ainda usado pelo destino.
+A regra de movimento permanece restrita ao dono mesmo após E7. Quando E4/E5 adicionarem campos/referências, confirmar que o movimento preserva esses dados e não dispara limpeza de imagem.
 
-**Andamento E1.1:** backend implementado, testado, validado pelo usuário e commitado em `678aab2`, com migração aplicada ao banco local. [Revisão e contrato](etapa-01-produto-manual/01-url-opcional.md). `url` omitida/null na criação resulta em null; no PATCH, omissão preserva e null remove. Extração continua exigindo URL. O frontend ainda exige URL no schema de produto; adaptar e validar a integração antes de encerrar E1.1 como funcionalidade. E1.2 não foi iniciado.
+**Andamento E1.1:** backend implementado, testado, validado pelo usuário e commitado em `678aab2`, com migração aplicada ao banco local. [Revisão e contrato](etapa-01-produto-manual/01-url-opcional.md). `url` omitida/null na criação resulta em null; no PATCH, omissão preserva e null remove. Extração continua exigindo URL. O frontend ainda exige URL no schema de produto; adaptar e validar a integração antes de encerrar E1.1 como funcionalidade.
+
+**Andamento E1.2:** backend implementado e verificado, validado pelo usuário e aprovado para commit. [Revisão e contrato](etapa-01-produto-manual/02-mover-produto.md). A integração no frontend permanece pendente.
 
 ### E2 — Miniaturas (normal)
 
@@ -116,6 +118,6 @@ Solicitar conteúdo/destinos legais aprovados e refletir as integrações efetiv
 
 Executar testes relevantes por mudança e registrar comandos reais; backend usa testes de unidade/integração HTTP e PostgreSQL, typecheck e build. Migrações precisam cobrir banco com dados, não apenas banco vazio. Testes de autorização usam múltiplas contas e chamadas diretas à API. Não declarar testes executados durante planejamento.
 
-Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por transação, username obrigatório, comprado binário e moedas BRL/USD/EUR.
+Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** aguardar a próxima orientação do usuário. Integração coordenada no frontend permanece pendente. E1.2 continua sendo o checkpoint seguinte, sem implementação antecipada.
+**Próximo passo:** revisão de E1.2 pelo usuário; após aprovação, commit seletivo. A integração coordenada no frontend permanece pendente para ambos os checkpoints.
