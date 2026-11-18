@@ -4,6 +4,7 @@ export interface WishlistSummary {
   id: string;
   name: string;
   productCount: number;
+  thumbnails: (string | null)[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,7 +15,14 @@ const wishlistSelect = {
   createdAt: true,
   updatedAt: true,
   _count: { select: { products: true } },
-} as const;
+  // Mesma ordem da listagem de produtos: os mais recentes primeiro e ID
+  // como desempate. Selecionamos apenas a imagem dos quatro primeiros.
+  products: {
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: 4,
+    select: { imageUrl: true },
+  },
+} satisfies Prisma.WishlistSelect;
 
 type WishlistRow = Prisma.WishlistGetPayload<{ select: typeof wishlistSelect }>;
 
@@ -23,6 +31,8 @@ function toSummary(row: WishlistRow): WishlistSummary {
     id: row.id,
     name: row.name,
     productCount: row._count.products,
+    // Um null preserva a posição de um produto que ainda não tem imagem.
+    thumbnails: row.products.map((product) => product.imageUrl),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

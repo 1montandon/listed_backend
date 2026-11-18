@@ -1,6 +1,6 @@
 # Revisão E1.2 — Mover produto entre listas
 
-**Estado:** backend implementado e verificado; validado pelo usuário e aprovado para commit. A integração no frontend permanece pendente.
+**Estado:** backend implementado e verificado; validado e commitado em `5d57dd7`. A integração no frontend permanece pendente.
 
 ## O que foi implementado
 
@@ -74,6 +74,6 @@ Verificações executadas nesta revisão: typecheck e build passaram; a suíte c
 
 ## Pendências
 
-- E1.2 foi validado e aprovado para commit.
+- E1.2 foi validado e commitado em `5d57dd7`.
 - Adaptar o frontend ao contrato e validar o fluxo completo; E1.1 no frontend também permanece pendente.
 - Quando E4/E5 adicionarem comprado ou imagens, testar que a atualização do vínculo preserva esses dados e não aciona limpeza indevida.

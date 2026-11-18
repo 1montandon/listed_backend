@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 implementado no backend e aguardando revisão. Integração com o frontend pendente. Os demais checkpoints permanecem planejados. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 validado e aprovado para commit. Integração com o frontend pendente. Os demais checkpoints permanecem planejados. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -48,13 +48,15 @@ A regra de movimento permanece restrita ao dono mesmo após E7. Quando E4/E5 adi
 
 **Andamento E1.1:** backend implementado, testado, validado pelo usuário e commitado em `678aab2`, com migração aplicada ao banco local. [Revisão e contrato](etapa-01-produto-manual/01-url-opcional.md). `url` omitida/null na criação resulta em null; no PATCH, omissão preserva e null remove. Extração continua exigindo URL. O frontend ainda exige URL no schema de produto; adaptar e validar a integração antes de encerrar E1.1 como funcionalidade.
 
-**Andamento E1.2:** backend implementado e verificado, validado pelo usuário e aprovado para commit. [Revisão e contrato](etapa-01-produto-manual/02-mover-produto.md). A integração no frontend permanece pendente.
+**Andamento E1.2:** backend validado e commitado em `5d57dd7`. [Revisão e contrato](etapa-01-produto-manual/02-mover-produto.md). A integração no frontend permanece pendente.
 
 ### E2 — Miniaturas (normal)
 
-Adicionar ao resumo de `GET /wishlists` até quatro miniaturas com ordem determinística alinhada à ordem de produtos. Proposta: os quatro primeiros produtos, preservando posições sem imagem com null; confirmar esse detalhe na revisão do contrato. Não confundir com quatro primeiras imagens não nulas. Definir nome/formato do campo antes de integrar o frontend.
+Adicionar ao resumo de `GET /wishlists` até quatro miniaturas com ordem determinística alinhada à ordem de produtos. Implementação para revisão: campo `thumbnails`, com os quatro primeiros produtos, preservando posições sem imagem com null. Não são as quatro primeiras imagens não nulas.
 
 Validar lista vazia, menos de quatro, mais de quatro, imagem ausente, contagem total independente do limite, isolamento e atualização após criar/editar/remover/mover. Buscar apenas campos necessários ao resumo, sem carregar todos os produtos de cada lista. Adaptar autorização do resumo em E7.
+
+**Andamento E2:** backend validado e aprovado para commit; [revisão do contrato](etapa-02-miniaturas/01-resumo-de-wishlist.md). Frontend ainda não integrado.
 
 ### E3 — Perfil e preferências (normal)
 
@@ -120,4 +122,4 @@ Executar testes relevantes por mudança e registrar comandos reais; backend usa 
 
 Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** revisão de E1.2 pelo usuário; após aprovação, commit seletivo. A integração coordenada no frontend permanece pendente para ambos os checkpoints.
+**Próximo passo:** iniciar E3 após definir as regras de username e o tratamento das contas existentes. A integração coordenada no frontend permanece pendente para E1.1, E1.2 e E2.
