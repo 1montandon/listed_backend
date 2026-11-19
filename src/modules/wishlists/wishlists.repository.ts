@@ -70,6 +70,15 @@ export class WishlistsRepository {
     return row ? toSummary(row) : null;
   }
 
+  async findProductsForTotals(userId: string, id: string) {
+    // Buscar pela lista diferencia lista vazia de lista inexistente/alheia.
+    // Retornamos só os campos necessários; nenhuma outra conta entra no cálculo.
+    return this.prisma.wishlist.findUnique({
+      where: { id, userId },
+      select: { products: { select: { priceCents: true, currency: true, isPurchased: true } } },
+    });
+  }
+
   async renameOwned(userId: string, id: string, name: string): Promise<WishlistSummary | null> {
     try {
       const row = await this.prisma.wishlist.update({

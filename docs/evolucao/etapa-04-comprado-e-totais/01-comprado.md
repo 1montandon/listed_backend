@@ -1,6 +1,6 @@
 # Revisão E4.1 — Marcar produto como comprado
 
-**Estado:** backend implementado, verificado e validado para commit. A migração foi aplicada ao PostgreSQL local. O frontend ainda não foi adaptado.
+**Estado:** backend validado e commitado em `7c99bdf`. A migração foi aplicada ao PostgreSQL local. O frontend ainda não foi adaptado.
 
 ## Objetivo
 
@@ -71,6 +71,6 @@ Para testar manualmente, crie um produto, confira `isPurchased: false`, marque c
 
 ## Pendências
 
-- E4.1 foi validado pelo usuário para commit.
+- E4.1 foi validado e commitado em `7c99bdf`.
 - Adaptar o frontend para mostrar e alterar o estado e validar o fluxo integrado. E1.1, E1.2, E2 e E3 também seguem pendentes no frontend.
-- E4.2 (totais), E4.3 (escolha do câmbio) e E4.4 (conversão) não foram implementados. Na próxima etapa, definir como apresentar produtos sem preço ou moeda, sem tratá-los como zero.
+- Consulte a [revisão de E4.2](02-totais-sem-cambio.md) para o contrato dos totais em centavos.

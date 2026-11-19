@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 commitado em `51097f0`; E4.1 validado e aprovado para commit. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 commitado em `51097f0`; E4.1 commitado em `7c99bdf`; E4.2 validado e aprovado para commit. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -71,13 +71,13 @@ Moeda padrão BRL; escolhas BRL/USD/EUR. Definir como responder a clientes antig
 | Checkpoint | Conceito e pequena entrega | Validação antes da pausa |
 | --- | --- | --- |
 | E4.1 — Comprado | Estado persistido por produto, default não comprado; marcar e desmarcar com estado desejado explícito. | Repetir a mesma alteração não inverte indevidamente o estado; reload, permissões, migração de registros e movimento preservando estado. |
-| E4.2 — Totais sem câmbio | Separar falta comprar e total; trabalhar primeiro com uma moeda e valores decimais. Definir contrato de totais e itens não incluídos. | Lista vazia, zero, valores ausentes, todos comprados, mistura de moedas ainda sem conversão e precisão da soma. |
+| E4.2 — Totais sem câmbio | Separar falta comprar e total; trabalhar primeiro com uma moeda e centavos inteiros. Definir contrato de totais e itens não incluídos. | Lista vazia, zero, valores ausentes, todos comprados, mistura de moedas ainda sem conversão e precisão da soma. |
 | E4.3 — Escolha e consulta de câmbio | Comparar provedores com o usuário e documentação atual: BRL/USD/EUR, licença de uso, atualização, limites e custo. Definir consulta, cache e falhas antes de integrar. | Origem/data da cotação observáveis; nenhuma cotação estática do Figma; validar resposta externa e conversão identidade sem chamada desnecessária. |
 | E4.4 — Conversão e integração | Converter para moeda preferida; definir precisão, arredondamento, atualização e apresentação de totais parciais. | Taxa/direção com exemplos conhecidos, indisponibilidade, ausência de moeda/taxa, troca de preferência, comprado alterando só falta comprar e preço original preservado. |
 
-**Andamento E4.1:** backend validado e aprovado para commit; [revisão de comprado](etapa-04-comprado-e-totais/01-comprado.md) documenta o contrato. Migração aplicada localmente. Frontend não integrado.
+**Andamento E4.1:** backend commitado em `7c99bdf`; [revisão de comprado](etapa-04-comprado-e-totais/01-comprado.md) documenta o contrato. Migração aplicada localmente. Frontend não integrado.
 
-Detalhar antes de E4.2 o tratamento de produtos legados com moeda desconhecida ou preço sem moeda; não adivinhar BRL. Usar fixture identificada para testes de taxas e registrar separadamente a consulta real. Chave de provedor não deve ir para o frontend. Local de agregação e formato HTTP serão decididos no contrato, sem biblioteca/provedor pré-selecionado neste plano.
+**Andamento E4.2:** backend validado pelo usuário. [Revisão dos totais](etapa-04-comprado-e-totais/02-totais-sem-cambio.md). Preço sem moeda e moeda diferente são informados como exclusões, sem presumir BRL. Usar fixture identificada para testes de taxas e registrar separadamente a consulta real. Chave de provedor não deve ir para o frontend. Em E4.2, a agregação ocorre no service e é exposta pela rota de totais; o provedor de câmbio ainda será escolhido.
 
 ### E5 — Imagens R2 (didático)
 
@@ -126,4 +126,4 @@ Executar testes relevantes por mudança e registrar comandos reais; backend usa 
 
 Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** seguir para E4.2 após o commit de E4.1. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2 e E3.
+**Próximo passo:** escolher o provedor e a política de consulta de E4.3 com o usuário. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2, E3 e E4.

@@ -41,6 +41,7 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 | Prévia de produto | `POST /products/extract` |
 | Produtos salvos | `POST /products`, `GET /wishlists/:id/products`, `GET/PATCH/DELETE /products/:id` |
 | Movimentação | `POST /products/:id/move` |
+| Totais sem câmbio | `GET /wishlists/:id/totals?currency=BRL` |
 
 ## Comandos
 
@@ -74,3 +75,4 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 - [E2 — Miniaturas](docs/evolucao/etapa-02-miniaturas/01-resumo-de-wishlist.md) — imagens no resumo de cada wishlist.
 - [E3 — Perfil](docs/evolucao/etapa-03-perfil/01-perfil.md) — username, bio e moeda preferida.
 - [E4.1 — Comprado](docs/evolucao/etapa-04-comprado-e-totais/01-comprado.md) — estado de compra no produto.
+- [E4.2 — Totais sem câmbio](docs/evolucao/etapa-04-comprado-e-totais/02-totais-sem-cambio.md) — soma em uma moeda e itens excluídos.

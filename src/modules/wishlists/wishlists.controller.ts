@@ -1,6 +1,6 @@
 import type { Request } from "express";
 import type { AuthenticatedHandler } from "../../shared/http/with-user.ts";
-import { wishlistBodySchema, wishlistIdSchema } from "./wishlists.schema.ts";
+import { wishlistBodySchema, wishlistIdSchema, wishlistTotalsQuerySchema } from "./wishlists.schema.ts";
 import { WishlistsService } from "./wishlists.service.ts";
 
 function idFrom(request: Request): string {
@@ -24,6 +24,13 @@ export class WishlistsController {
 
   readonly get: AuthenticatedHandler = async (request, response, userId) => {
     response.json({ wishlist: await this.service.get(userId, idFrom(request)) });
+  };
+
+  readonly totals: AuthenticatedHandler = async (request, response, userId) => {
+    const wishlistId = idFrom(request);
+    const query = wishlistTotalsQuerySchema.parse(request.query);
+    const totals = await this.service.getTotals(userId, wishlistId, query.currency);
+    response.json({ totals });
   };
 
   readonly rename: AuthenticatedHandler = async (request, response, userId) => {

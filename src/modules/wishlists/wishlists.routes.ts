@@ -17,6 +17,7 @@ wishlistsRouter.use((_request, response, next) => {
 
 wishlistsRouter.post("/", withUser(controller.create));
 wishlistsRouter.get("/", withUser(controller.list));
+wishlistsRouter.get("/:id/totals", withUser(controller.totals));
 wishlistsRouter.get("/:id", withUser(controller.get));
 wishlistsRouter.patch("/:id", withUser(controller.rename));
 wishlistsRouter.delete("/:id", withUser(controller.delete));
