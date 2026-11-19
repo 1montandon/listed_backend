@@ -115,7 +115,7 @@ test("browser: Chromium executa JS que insere JSON-LD depois do HTML inicial", {
     assert.equal(extracted.url, fixtureUrl);
     assert.equal(extracted.name, "Café e Mouse Gamer");
     assert.equal(extracted.imageUrl, "https://cdn.example/mouse.jpg");
-    assert.equal(extracted.price, "220.34");
+    assert.equal(extracted.priceCents, 22034);
     assert.equal(extracted.currency, "BRL");
     assert.equal(page.contentType, "text/html; charset=utf-8");
     assert.ok(page.html.toString("utf8").includes("Café e Mouse Gamer"));
@@ -156,7 +156,7 @@ test("browser: prazo com HTML parcial preserva a página, fecha Chromium e liber
       const page = await loader.render(fixtureUrl);
       const product = parseProductPage(page.html, fixtureUrl, page.finalUrl, page.contentType);
       assert.equal(product.name, "Café parcial");
-      assert.equal(product.price, null);
+      assert.equal(product.priceCents, null);
       assert.equal(product.currency, null);
       assert.equal(browsers[attempt]?.isConnected(), false);
     }

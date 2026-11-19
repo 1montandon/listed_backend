@@ -35,7 +35,7 @@ export class ProductsService {
       url: originalUrl,
       name: null,
       imageUrl: null,
-      price: null,
+      priceCents: null,
       currency: null,
       storeName: null,
     };
@@ -140,7 +140,7 @@ export class ProductsService {
     }
 
     // Só loja ou só moeda ainda não identificam um produto para revisão.
-    const hasProductData = product.name !== null || product.imageUrl !== null || product.price !== null;
+    const hasProductData = product.name !== null || product.imageUrl !== null || product.priceCents !== null;
     if (!hasProductData) {
       return { status: "failed", ...responseFields, reason };
     }

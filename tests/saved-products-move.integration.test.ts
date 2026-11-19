@@ -36,7 +36,7 @@ test("move produto entre listas próprias preservando identidade e dados", async
     const other = await createAccessToken(otherId);
     const original = await prisma.savedProduct.create({ data: {
       wishlistId: sourceId, name: "Camisa", url: null, imageUrl: "https://example.com/foto.jpg",
-      price: "12.30", currency: "BRL", storeName: "Loja",
+      priceCents: 1230n, currency: "BRL", storeName: "Loja",
       createdAt: new Date("2020-01-01T00:00:00.000Z"), updatedAt: new Date("2020-01-01T00:00:00.000Z"),
     } });
     const route = `/products/${original.id}/move`;
@@ -68,7 +68,7 @@ test("move produto entre listas próprias preservando identidade e dados", async
     assert.equal(moved.name, original.name);
     assert.equal(moved.url, null);
     assert.equal(moved.imageUrl, original.imageUrl);
-    assert.equal(moved.price, "12.30");
+    assert.equal(moved.priceCents, 1230);
     assert.equal(moved.currency, "BRL");
     assert.equal(moved.storeName, "Loja");
     assert.equal(moved.createdAt, original.createdAt.toISOString());

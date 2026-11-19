@@ -1,7 +1,7 @@
-export type ProductField = "name" | "imageUrl" | "price" | "currency" | "storeName";
+export type ProductField = "name" | "imageUrl" | "priceCents" | "currency" | "storeName";
 
 // Um contrato único de completude, usado pelo service e pela espera do navegador.
-export const PRODUCT_FIELDS: ProductField[] = ["name", "imageUrl", "price", "currency", "storeName"];
+export const PRODUCT_FIELDS: ProductField[] = ["name", "imageUrl", "priceCents", "currency", "storeName"];
 
 export interface ProductPage {
   html: Buffer;
@@ -21,7 +21,7 @@ export interface ExtractedProduct {
   url: string;
   name: string | null;
   imageUrl: string | null;
-  price: string | null;
+  priceCents: number | null;
   currency: string | null;
   storeName: string | null;
 }

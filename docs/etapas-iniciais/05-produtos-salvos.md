@@ -14,7 +14,7 @@ O frontend pode preencher o formulário com a prévia de `POST /api/v1/products/
   "name": "Camisa de linho",
   "url": "https://loja.example/produto",
   "imageUrl": "https://loja.example/camisa.jpg",
-  "price": "279.90",
+  "priceCents": 27990,
   "currency": "BRL",
   "storeName": "Loja Exemplo"
 }
@@ -30,12 +30,18 @@ As rotas abaixo usam o prefixo `/api/v1` e exigem Bearer.
 | `PATCH /products/:id` | 200 com o produto atualizado. |
 | `DELETE /products/:id` | 204. |
 
-A resposta inclui `id`, `wishlistId`, `createdAt` e `updatedAt`. Imagem, preço, moeda e loja são opcionais. Campos opcionais ausentes retornam `null`. O `PATCH` preserva campos omitidos e aceita `null` para limpar um opcional, como `price`. O vínculo com a wishlist é definido na criação. Entrada inválida recebe 400. Recursos ausentes ou de outra conta recebem 404, com `WISHLIST_NOT_FOUND` ou `PRODUCT_NOT_FOUND`.
+A resposta inclui `id`, `wishlistId`, `createdAt` e `updatedAt`. Imagem, preço, moeda e loja são opcionais. Campos opcionais ausentes retornam `null`. O `PATCH` preserva campos omitidos e aceita `null` para limpar um opcional, como `priceCents`. O vínculo com a wishlist é definido na criação. Entrada inválida recebe 400. Recursos ausentes ou de outra conta recebem 404, com `WISHLIST_NOT_FOUND` ou `PRODUCT_NOT_FOUND`.
 
 ## Decisões técnicas
 
 - O `connect` do Prisma vincula a wishlist usando o UUID e o ID do dono. Edição e exclusão incluem a propriedade na própria escrita. [Referência do Prisma](https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-on-non-unique-fields-with-userwhereuniqueinput)
-- O schema aceita preço como string decimal não negativa, com até dez dígitos inteiros e duas casas. O repository devolve duas casas, por exemplo `"279.90"`, sem converter o decimal para `number`. A moeda aceita três letras e é convertida para maiúsculas.
+- Cadastro e edição aceitam `priceCents` como inteiro de 0 a 999.999.999.999 ou `null`. Por exemplo, `27990` representa 279,90 na moeda informada. Strings e valores fracionários recebem 400. A moeda aceita três letras e é convertida para maiúsculas.
+
+### Persistência em centavos
+
+O PostgreSQL guarda `price_cents` como `BIGINT`, que o Prisma lê como `bigint` em TypeScript. O repository converte o inteiro validado para `bigint` ao gravar e devolve um número JSON ao ler. A coluna limita o valor à faixa de preços anterior, que cabe nos inteiros seguros do JavaScript.
+
+A migração multiplica os valores decimais existentes por 100 dentro de uma transação. Um preço de `279.90` vira `27990`, `0.00` vira `0` e preço ausente continua `NULL`. [Migração SQL](../../prisma/migrations/20261118030000_product_price_cents/migration.sql) · [Teste da migração](../../tests/product-price-cents-migration.test.ts)
 - O salvamento usa os campos que o usuário revisou. Assim, ele funciona mesmo quando a loja bloqueia a extração.
 
 ## O que ler

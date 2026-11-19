@@ -4,7 +4,7 @@
 
 O backend do MVP gerencia contas, sessões, perfil e wishlists privadas. A pessoa pode colar o link de um produto, revisar a prévia e salvar os dados, ou preencher o formulário manualmente. A API permite consultar, editar e remover os itens salvos. A recuperação de senha e as verificações operacionais completam a preparação para usuários reais.
 
-Cada produto salvo guarda o preço informado no cadastro ou na edição. URLs duplicadas são permitidas. Monitoramento automático de preço e compra pela aplicação ficam fora do escopo do backend; marcar comprado apenas registra um estado, sem processar uma compra.
+O banco e a API representam o preço do produto em centavos inteiros, no campo `priceCents` da API. URLs duplicadas são permitidas. Monitoramento automático de preço e compra pela aplicação ficam fora do escopo do backend; marcar comprado apenas registra um estado, sem processar uma compra.
 
 **Ampliação de escopo definida em 17/11/2026:** produto manual sem URL, movimentação transacional, miniaturas, perfil ampliado, moeda preferida, comprado e totais convertidos, imagens no Cloudflare R2, recuperação/segurança e compartilhamento. Consulte o [plano de evolução do backend](docs/evolucao/plano.md) para requisitos, ordem e checkpoints. São funcionalidades planejadas, não contratos já implementados. A relação continua sendo uma wishlist para muitos produtos; cada produto pertence a uma única lista.
 

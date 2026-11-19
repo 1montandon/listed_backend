@@ -57,9 +57,11 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
       { ...minimum, url: "   " },
       { ...minimum, url: 123 },
       { ...minimum, url: "ftp://loja.example/produto" },
-      { ...minimum, price: 25.5 },
-      { ...minimum, price: "0.001" },
-      { ...minimum, price: "10000000000.00" },
+      { ...minimum, priceCents: 25.5 },
+      { ...minimum, priceCents: "24990" },
+      { ...minimum, priceCents: -1 },
+      { ...minimum, price: "249.90" },
+      { ...minimum, priceCents: 1_000_000_000_000 },
     ]) {
       assert.equal((await request(ownerToken, "/products", "POST", invalidBody)).status, 400);
     }
@@ -72,7 +74,7 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
     assert.equal(withoutUrl.status, 201);
     const nameOnlyProduct = (await withoutUrl.json()).product;
     assert.equal(nameOnlyProduct.name, "Presente sem link");
-    for (const field of ["url", "imageUrl", "price", "currency", "storeName"]) {
+    for (const field of ["url", "imageUrl", "priceCents", "currency", "storeName"]) {
       assert.equal(nameOnlyProduct[field], null);
     }
 
@@ -132,7 +134,7 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
     assert.equal(product.url, url);
     assert.equal(product.wishlistId, wishlistId);
     assert.equal(product.imageUrl, null);
-    assert.equal(product.price, null);
+    assert.equal(product.priceCents, null);
     assert.equal(product.currency, null);
     assert.equal(product.storeName, null);
 
@@ -140,7 +142,7 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
       ...minimum,
       name: "Camisa azul",
       imageUrl: "https://loja.example/camisa.jpg",
-      price: "249.9",
+      priceCents: 24990,
       currency: "brl",
       storeName: "Loja Exemplo",
     });
@@ -148,8 +150,14 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
     const duplicate = (await reviewed.json()).product;
     assert.notEqual(duplicate.id, product.id);
     assert.equal(duplicate.url, product.url);
-    assert.equal(duplicate.price, "249.90");
+    assert.equal(duplicate.priceCents, 24990);
+    assert.equal("price" in duplicate, false);
     assert.equal(duplicate.currency, "BRL");
+    const storedPrice = await prisma.savedProduct.findUniqueOrThrow({
+      where: { id: duplicate.id },
+      select: { priceCents: true },
+    });
+    assert.equal(storedPrice.priceCents, 24990n);
 
     const listed = await request(ownerToken, listPath);
     assert.equal(listed.status, 200);
@@ -166,11 +174,24 @@ test("produtos salvos validam dados e limitam o CRUD ao dono da wishlist", async
 
     assert.equal((await request(ownerToken, productPath, "PATCH", {})).status, 400);
     assert.equal((await request(ownerToken, productPath, "PATCH", { wishlistId: randomUUID() })).status, 400);
-    const edited = await request(ownerToken, productPath, "PATCH", { name: "Camisa revisada", price: null });
+    const maxPrice = await request(ownerToken, productPath, "PATCH", { priceCents: 999_999_999_999 });
+    assert.equal(maxPrice.status, 200);
+    assert.equal((await maxPrice.json()).product.priceCents, 999_999_999_999);
+
+    const zeroPrice = await request(ownerToken, productPath, "PATCH", { priceCents: 0 });
+    assert.equal(zeroPrice.status, 200);
+    assert.equal((await zeroPrice.json()).product.priceCents, 0);
+    const storedZero = await prisma.savedProduct.findUniqueOrThrow({
+      where: { id: duplicate.id },
+      select: { priceCents: true },
+    });
+    assert.equal(storedZero.priceCents, 0n);
+
+    const edited = await request(ownerToken, productPath, "PATCH", { name: "Camisa revisada", priceCents: null });
     assert.equal(edited.status, 200);
     const editedProduct = (await edited.json()).product;
     assert.equal(editedProduct.name, "Camisa revisada");
-    assert.equal(editedProduct.price, null);
+    assert.equal(editedProduct.priceCents, null);
     assert.equal(editedProduct.url, duplicate.url);
     assert.equal(editedProduct.currency, "BRL");
 

@@ -66,7 +66,7 @@ test("fallback: uma prévia HTTP completa não abre o navegador", async () => {
   const result = await scenario.service.extract({ url: productUrl });
 
   assert.equal(result.status, "complete");
-  assert.equal(result.product.price, "220.34");
+  assert.equal(result.product.priceCents, 22034);
   assert.deepEqual(scenario.calls, { http: 1, browser: 0 });
 });
 
@@ -76,7 +76,7 @@ test("fallback: prévia parcial tenta o navegador uma vez e aceita produto mais 
 
   assert.equal(result.status, "complete");
   assert.equal(result.product.url, productUrl);
-  assert.equal(result.product.price, "220.34");
+  assert.equal(result.product.priceCents, 22034);
   assert.equal(result.product.currency, "BRL");
   assert.deepEqual(result.missingFields, []);
   assert.deepEqual(scenario.calls, { http: 1, browser: 1 });
@@ -157,7 +157,7 @@ test("Shein: caminho de verificação em outro domínio segue a extração norma
   const result = await scenario.service.extract({ url: productUrl });
 
   assert.equal(result.status, "complete");
-  assert.equal(result.product.price, "220.34");
+  assert.equal(result.product.priceCents, 22034);
   assert.deepEqual(scenario.calls, { http: 1, browser: 0 });
 });
 
@@ -170,7 +170,7 @@ test("Nike: recusa HTTP preserva a falha e oferece sugestão de nome pela URL", 
   assert.equal(result.suggestedName, "Chuteira Society Nike Tiempo Ligera Pro");
   assert.equal(result.product.name, null);
   assert.equal(result.product.url, nikeProductUrl);
-  assert.deepEqual(result.missingFields, ["name", "imageUrl", "price", "currency", "storeName"]);
+  assert.deepEqual(result.missingFields, ["name", "imageUrl", "priceCents", "currency", "storeName"]);
   assert.deepEqual(scenario.calls, { http: 1, browser: 0 });
 });
 
@@ -188,7 +188,7 @@ test("Shopee: verifica a URL final e usa o next do link original para a sugestã
   assert.equal(result.suggestedName, "Mouse Gamer Sem Fio");
   assert.equal(result.product.name, null);
   assert.equal(result.product.url, originalUrl);
-  assert.deepEqual(result.missingFields, ["name", "imageUrl", "price", "currency", "storeName"]);
+  assert.deepEqual(result.missingFields, ["name", "imageUrl", "priceCents", "currency", "storeName"]);
   assert.deepEqual(scenario.calls, { http: 1, browser: 0 });
 });
 
@@ -203,7 +203,7 @@ test("sugestão de nome mantém a prévia parcial e seus campos ausentes", async
   assert.equal(result.product.name, null);
   assert.equal(result.product.url, nikeProductUrl);
   assert.equal(result.product.imageUrl, "https://www.nike.com.br/chuteira.jpg");
-  assert.deepEqual(result.missingFields, ["name", "price", "currency"]);
+  assert.deepEqual(result.missingFields, ["name", "priceCents", "currency"]);
   assert.deepEqual(scenario.calls, { http: 1, browser: 1 });
 });
 
@@ -246,7 +246,7 @@ test("fallback: 429 com Retry-After permite uma única alternativa com navegador
   const result = await new ProductsService(loader).extract({ url: productUrl });
 
   assert.equal(result.status, "complete");
-  assert.equal(result.product.price, "220.34");
+  assert.equal(result.product.priceCents, 22034);
   assert.deepEqual(calls, { http: 1, browser: 1 });
 });
 
@@ -258,9 +258,9 @@ test("fallback: navegador ocupado, ausente ou lento preserva os dados HTTP parci
     assert.equal(result.status, "partial", reason);
     assert.equal(result.product.name, "Mouse Gamer", reason);
     assert.equal(result.product.imageUrl, "https://shop.example/mouse.jpg", reason);
-    assert.equal(result.product.price, null, reason);
+    assert.equal(result.product.priceCents, null, reason);
     assert.equal(result.product.currency, null, reason);
-    assert.deepEqual(result.missingFields, ["price", "currency"], reason);
+    assert.deepEqual(result.missingFields, ["priceCents", "currency"], reason);
     assert.deepEqual(scenario.calls, { http: 1, browser: 1 }, reason);
   }
 });
@@ -274,7 +274,7 @@ test("fallback: sem dados HTTP, a falha do navegador é informada sem perder a U
     if (result.status === "failed") assert.equal(result.reason, reason);
     assert.equal(result.product.url, productUrl);
     assert.equal(result.product.name, null);
-    assert.equal(result.product.price, null);
+    assert.equal(result.product.priceCents, null);
     assert.deepEqual(scenario.calls, { http: 1, browser: 1 }, reason);
   }
 });
@@ -290,7 +290,7 @@ test("fallback: candidato com mais campos é usado inteiro, sem juntar campos da
 
   assert.equal(result.status, "partial");
   assert.equal(result.product.name, "Mouse Gamer KYSONA");
-  assert.equal(result.product.price, "220.34");
+  assert.equal(result.product.priceCents, 22034);
   assert.equal(result.product.currency, "BRL");
   // A imagem HTTP existia. Se aparecesse aqui, teria ocorrido uma mistura.
   assert.equal(result.product.imageUrl, null);
@@ -311,7 +311,7 @@ test("fallback: empate de campos mantém HTTP e não completa sua moeda com outr
 
   assert.equal(result.status, "partial");
   assert.equal(result.product.imageUrl, "https://shop.example/http-mouse.jpg");
-  assert.equal(result.product.price, "100.00");
+  assert.equal(result.product.priceCents, 10000);
   assert.equal(result.product.currency, null);
 });
 
@@ -326,7 +326,7 @@ test("fallback: produto mais completo com nome divergente não substitui o produ
   assert.equal(result.status, "partial");
   assert.equal(result.product.name, "Mouse Gamer");
   assert.equal(result.product.imageUrl, "https://shop.example/mouse.jpg");
-  assert.equal(result.product.price, null);
+  assert.equal(result.product.priceCents, null);
   assert.equal(result.product.currency, null);
 });
 
@@ -341,6 +341,6 @@ test("fallback: comparação de nomes ignora caixa e aceita um nome contido no o
 
     assert.equal(result.status, "complete", browserName);
     assert.equal(result.product.name, browserName);
-    assert.equal(result.product.price, "220.34");
+    assert.equal(result.product.priceCents, 22034);
   }
 });

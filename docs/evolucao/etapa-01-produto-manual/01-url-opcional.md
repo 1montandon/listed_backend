@@ -30,7 +30,7 @@ Criação com o mínimo necessário, em `POST /products`:
 }
 ```
 
-A resposta continua sendo `201` com `{ "product": ... }`. O produto contém os IDs e datas habituais, `name: "Presente de aniversário"` e `url`, `imageUrl`, `price`, `currency`, `storeName` como `null`.
+A resposta continua sendo `201` com `{ "product": ... }`. O produto contém os IDs e datas habituais, `name: "Presente de aniversário"` e `url`, `imageUrl`, `priceCents`, `currency`, `storeName` como `null`.
 
 | Entrada referente a `url` | Criação | Edição por PATCH |
 | --- | --- | --- |

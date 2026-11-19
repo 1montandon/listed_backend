@@ -29,6 +29,8 @@ curl.exe http://localhost:3333/api/v1/ready
 
 As rotas usam o prefixo `/api/v1`. As operações privadas usam `Authorization: Bearer <accessToken>`. Os exemplos de requisição e resposta estão nas revisões.
 
+Envie e leia preços em `priceCents`, um inteiro JSON em centavos. Por exemplo, R$ 279,90 é `27990`. Preço ausente é `null`.
+
 Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }`. A resposta da prévia tem seu próprio `status`, que indica quantos dados a coleta conseguiu obter.
 
 | Recurso | Rotas |

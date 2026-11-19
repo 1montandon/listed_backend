@@ -30,6 +30,23 @@ function htmlWithJsonLd(data: unknown): Buffer {
   return Buffer.from(`<meta charset="utf-8"><script type="application/ld+json">${JSON.stringify(data)}</script>`);
 }
 
+test("extração preserva zero e só publica preços na faixa inteira do cadastro", () => {
+  for (const [price, expected] of [
+    ["0", 0],
+    ["9999999999.99", 999_999_999_999],
+    ["10000000000.00", null],
+  ] as const) {
+    const html = htmlWithJsonLd({
+      "@type": "Product",
+      name: "Livro",
+      offers: { "@type": "Offer", price, priceCurrency: "BRL" },
+    });
+    const product = parseProductPage(html, originalUrl, originalUrl);
+    assert.equal(product.priceCents, expected, price);
+    assert.equal("price" in product, false);
+  }
+});
+
 test("Mad Enlatados: bloco fornecido pelo usuário produz nome, imagem, 209.00 e BRL", async () => {
   // import.meta.url é o endereço deste arquivo. new URL resolve a fixture ao lado
   // dele, sem depender de qual pasta estava aberta ao executar o comando.
@@ -40,7 +57,7 @@ test("Mad Enlatados: bloco fornecido pelo usuário produz nome, imagem, 209.00 e
     url: pageUrl,
     name: "CAMISETA GUMMO (PRETO)",
     imageUrl: "https://madenlatados.com.br/cdn/shop/files/MG_6211copiar.jpg?v=1789588151&width=1920",
-    price: "209.00", currency: "BRL", storeName: "madenlatados.com.br",
+    priceCents: 20900, currency: "BRL", storeName: "madenlatados.com.br",
   });
 });
 
@@ -50,7 +67,7 @@ test("AliExpress: bloco fornecido pelo usuário recupera inclusive 220.34 e BRL"
   const product = parseProductPage(htmlWithJsonLd(JSON.parse(jsonText)), pageUrl, pageUrl);
   assert.equal(product.name, "Mouse Gamer Sem Fio KYSONA Jupiter X Ultra PAW3950 8000Hz 54L15 MCU Fibra de Carbono Composta Tri-Mode 61g Ergonômico Omron 70M - AliExpress");
   assert.equal(product.imageUrl, "https://ae-pic-a1.aliexpress-media.com/kf/S9e1b7641b5964297a6210195dee8ccddL.jpg");
-  assert.equal(product.price, "220.34");
+  assert.equal(product.priceCents, 22034);
   assert.equal(product.currency, "BRL");
 });
 
@@ -62,13 +79,13 @@ test("Shein: ProductGroup usa o skucode da oferta quando o link escolhe um taman
   const html = htmlWithJsonLd(data);
   const defaultProduct = parseProductPage(html, groupUrl, groupUrl);
   assert.match(defaultProduct.name ?? "", /Tamanho XL$/);
-  assert.equal(defaultProduct.price, "107.12");
+  assert.equal(defaultProduct.priceCents, 10712);
 
   const xsUrl = data[0].hasVariant[1].offers.url;
   const selectedProduct = parseProductPage(html, xsUrl, xsUrl);
   assert.match(selectedProduct.name ?? "", /Tamanho XS$/);
   assert.equal(selectedProduct.imageUrl, data[0].hasVariant[1].image[0]);
-  assert.equal(selectedProduct.price, "99.16");
+  assert.equal(selectedProduct.priceCents, 9916);
   assert.equal(selectedProduct.currency, "BRL");
 
   const unknownUrl = new URL(groupUrl);
@@ -78,7 +95,7 @@ test("Shein: ProductGroup usa o skucode da oferta quando o link escolhe um taman
     <meta property="product:price:currency" content="BRL">`)]);
   const unknownProduct = parseProductPage(withGlobalPrice, unknownUrl.href, unknownUrl.href);
   assert.equal(unknownProduct.name, data[0].name);
-  assert.equal(unknownProduct.price, null);
+  assert.equal(unknownProduct.priceCents, null);
   assert.equal(unknownProduct.currency, null);
 });
 
@@ -89,7 +106,7 @@ test("Product com offers em lista também respeita ?variant, sem precisar de Pro
     { "@type": "Offer", url: "/products/camiseta?variant=222", price: "20", priceCurrency: "BRL" },
   ] });
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, "20.00");
+  assert.equal(product.priceCents, 2000);
   assert.equal(product.currency, "BRL");
 });
 
@@ -105,7 +122,7 @@ test("extrai Product JSON-LD do exemplo Renner sem confundir marca com loja", ()
   assert.deepEqual(parseProductPage(html, originalUrl, originalUrl), {
     url: originalUrl, name: "Camisa Oversized em Linho",
     imageUrl: "https://img.lojasrenner.com.br/item/931454799/zoom/3.jpg",
-    price: "279.90", currency: "BRL", storeName: "Renner",
+    priceCents: 27990, currency: "BRL", storeName: "Renner",
   });
 });
 
@@ -119,7 +136,7 @@ test("lê arrays, @graph, ofertas em lista e ignora JSON-LD quebrado", () => {
   const product = parseProductPage(html, "https://shop.example/p/1", "https://shop.example/p/1");
   assert.equal(product.name, "Tênis");
   assert.equal(product.imageUrl, "https://shop.example/foto.jpg");
-  assert.equal(product.price, "1299.90");
+  assert.equal(product.priceCents, 129990);
   assert.equal(product.currency, "BRL");
   assert.equal(product.storeName, "shop.example");
 });
@@ -133,7 +150,7 @@ test("usa Open Graph como fallback quando JSON-LD não informa campos", () => {
     <meta property="product:price:currency" content="BRL">`);
   const product = parseProductPage(html, "https://shop.example/p/2", "https://shop.example/p/2");
   assert.equal(product.name, "Bolsa Azul");
-  assert.equal(product.price, "39.90");
+  assert.equal(product.priceCents, 3990);
   assert.equal(product.imageUrl, "https://cdn.example/bolsa.jpg");
 });
 
@@ -206,7 +223,7 @@ test("moeda das meta tags só completa preço JSON-LD quando os valores correspo
       <meta property="product:price:currency" content="USD">`)]);
 
     const product = parseProductPage(withMetaOffer, pageUrl, pageUrl);
-    assert.equal(product.price, "100.00", `meta price ${metaPrice}`);
+    assert.equal(product.priceCents, 10000, `meta price ${metaPrice}`);
     // Não podemos juntar o preço 100 do JSON-LD com a moeda da oferta de 50.
     // Se a meta confirma os mesmos 100, sua moeda pode completar o campo.
     assert.equal(product.currency, metaPrice === "100" ? "USD" : null, `meta price ${metaPrice}`);
@@ -231,7 +248,7 @@ test("Shopify: ProductGroup fornece nome/imagem e a variante fornece preço unit
   const product = parseProductPage(html, pageUrl, pageUrl);
   assert.equal(product.name, "Camiseta do grupo");
   assert.equal(product.imageUrl, "https://shop.example/camiseta.jpg");
-  assert.equal(product.price, "89.90");
+  assert.equal(product.priceCents, 8990);
   assert.equal(product.currency, "BRL");
 });
 
@@ -263,7 +280,7 @@ test("Shopify: ?variant escolhe a variante pelo Product.url ou Offer.url", () =>
 
     const product = parseProductPage(html, pageUrl, pageUrl);
     assert.equal(product.name, "Camiseta G", urlLocation);
-    assert.equal(product.price, "120.00", urlLocation);
+    assert.equal(product.priceCents, 12000, urlLocation);
     assert.equal(product.currency, "BRL", urlLocation);
   }
 });
@@ -286,7 +303,7 @@ test("Shopify: variante pedida desconhecida não usa o preço de outra variante"
   const product = parseProductPage(withGlobalMeta, pageUrl, pageUrl);
   assert.equal(product.name, "Camiseta");
   assert.equal(product.imageUrl, "https://shop.example/camiseta.jpg");
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, null);
 });
 
@@ -303,7 +320,7 @@ test("Shopify: variante encontrada sem oferta não herda o preço geral do grupo
   const product = parseProductPage(html, pageUrl, pageUrl);
   assert.equal(product.name, "Camiseta G");
   assert.equal(product.imageUrl, "https://shop.example/camiseta.jpg");
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, null);
 });
 
@@ -315,7 +332,7 @@ test("AggregateOffer preserva moeda, mas uma faixa de preços não vira preço e
   });
 
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, "BRL");
 });
 
@@ -330,7 +347,7 @@ test("AggregateOffer com faixa não usa meta tag do menor valor como preço exat
     <meta property="product:price:currency" content="BRL">`)]);
 
   const product = parseProductPage(withMetaOffer, pageUrl, pageUrl);
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, "BRL");
 });
 
@@ -342,7 +359,7 @@ test("AggregateOffer com extremos equivalentes informa um preço único normaliz
   });
 
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, "99.90");
+  assert.equal(product.priceCents, 9990);
   assert.equal(product.currency, "BRL");
 });
 
@@ -360,7 +377,7 @@ test("AggregateOffer usa uma oferta concreta sem pegar moeda de outra oferta", (
   });
 
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, "199.90");
+  assert.equal(product.priceCents, 19990);
   assert.equal(product.currency, "BRL");
 });
 
@@ -387,7 +404,7 @@ test("priceSpecification aceita objeto ou lista e ignora frete/preço riscado", 
       offers: { "@type": "Offer", priceSpecification },
     });
     const product = parseProductPage(html, pageUrl, pageUrl);
-    assert.equal(product.price, "39.90");
+    assert.equal(product.priceCents, 3990);
     assert.equal(product.currency, "BRL");
   }
 });
@@ -406,7 +423,7 @@ test("priceSpecification mantém preço/moeda da mesma especificação", () => {
   });
 
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, "39.90");
+  assert.equal(product.priceCents, 3990);
   assert.equal(product.currency, "BRL");
 });
 
@@ -424,7 +441,7 @@ test("preço direto só recebe moeda de especificação com o mesmo valor", () =
   });
 
   const product = parseProductPage(html, pageUrl, pageUrl);
-  assert.equal(product.price, "39.90");
+  assert.equal(product.priceCents, 3990);
   assert.equal(product.currency, "BRL");
 });
 
@@ -439,7 +456,7 @@ test("AliExpress: meta tags sem preço deixam preço/moeda ausentes, sem inferir
   const product = parseProductPage(html, pageUrl, pageUrl);
   assert.equal(product.name, "Mouse de exemplo");
   assert.equal(product.imageUrl, "https://cdn.example/mouse.jpg");
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, null);
 });
 
@@ -452,7 +469,7 @@ test("Mercado Livre: página de verificação não é confundida com dados de pr
   const product = parseProductPage(html, pageUrl, pageUrl);
   assert.equal(product.name, null);
   assert.equal(product.imageUrl, null);
-  assert.equal(product.price, null);
+  assert.equal(product.priceCents, null);
   assert.equal(product.currency, null);
 });
 
@@ -500,7 +517,7 @@ test("retorna parcial ou falha sem salvar e preserva a URL original", async () =
   const result = await new ProductsService(httpOnly(new StubPageLoader())).extract({ url: originalUrl });
   assert.equal(result.status, "partial");
   assert.equal(result.product.url, originalUrl);
-  assert.deepEqual(result.missingFields, ["imageUrl", "price", "currency"]);
+  assert.deepEqual(result.missingFields, ["imageUrl", "priceCents", "currency"]);
 
   const failed = await new ProductsService(
     httpOnly(new ProductPageLoader(new ProductUrlPolicy(async () => ["127.0.0.1"]))),

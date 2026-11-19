@@ -114,7 +114,7 @@ Content-Type: application/json
     "url": "https://loja.example/produto/camisa",
     "name": "Camisa Preta",
     "imageUrl": "https://loja.example/images/camisa.jpg",
-    "price": "279.90",
+    "priceCents": 27990,
     "currency": "BRL",
     "storeName": "Loja Exemplo"
   },
@@ -235,7 +235,7 @@ Uma página pode ter objetos de organização, navegação e produto em scripts 
 | --- | --- |
 | `name` | `Product.name` vira texto limpo: `Camisa Preta`. |
 | `imageUrl` | Pega a primeira imagem; `/images/camisa.jpg` com a URL final vira `https://loja.example/images/camisa.jpg`. Não baixa a imagem. |
-| `price` | Lê a oferta e normaliza para string decimal com duas casas: `279.90`. |
+| `priceCents` | Lê a oferta e converte para centavos inteiros. `"279.90"` vira `27990`. |
 | `currency` | Lê a moeda da oferta e padroniza três letras maiúsculas: `BRL`. |
 | `storeName` | Lê `og:site_name`: `Loja Exemplo`; sem essa tag, usa o domínio final. |
 | `url` | Preserva o endereço original colado pelo usuário, mesmo após redirects. |
@@ -259,7 +259,7 @@ Para o nome, a ordem é JSON-LD → `og:title` → texto da tag HTML `<title>`. 
 
 Quando completamos moeda por outra especificação/meta, o preço precisa corresponder: oferta `100` sem moeda e meta `50 USD` não podem produzir `100 USD`. O indicador interno `isPriceRange` também impede que uma meta com o menor valor transforme uma faixa em preço exato.
 
-`normalizePrice` trata `1.299,90` como `1299.90`, `39` como `39.00` e `39.9` como `39.90`. Faz isso com texto (`replace`, `split`, `padEnd`), sem cálculos float. `parseFloat("279,90")` descartaria os centavos; floats também têm aproximações, como `0.1 + 0.2`. Formatos desconhecidos ficam `null`, permitindo revisão manual. A moeda é validada por formato de três letras, sem adivinhar BRL pelo país ou USD por um default do JavaScript da loja.
+`parsePriceCents` trabalha com os dígitos do preço recebido. `1.299,90` vira `129990n` internamente e `129990` no JSON. A conversão evita perder os centavos, como aconteceria com `parseFloat("279,90")`. Formatos desconhecidos e valores acima do limite do cadastro retornam `priceCents: null` para revisão manual. Quando faltar o preço, `missingFields` inclui `priceCents`. O código da moeda continua vindo da loja.
 
 **Agora leia `parseProductPage` em suas cinco etapas e depois seus auxiliares na ordem em que aparecem.** Use os exemplos de `tests/products.test.ts` para mudar mentalmente uma entrada: remover `offers` deve deixar preço/moeda ausentes sem meta tags; trocar imagem por `/foto.jpg` deve completar o domínio final. Se uma anotação TS atrapalhar, consulte [Conceitos de TypeScript](#conceitos-de-typescript).
 

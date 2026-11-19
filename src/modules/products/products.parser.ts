@@ -13,6 +13,7 @@
 // * as cheerio reúne as funções exportadas pelo pacote sob esse nome.
 // Por isso chamamos cheerio.loadBuffer, em vez de importar só loadBuffer.
 import * as cheerio from "cheerio";
+import { decimalToCents, MAX_PRICE_CENTS } from "../../shared/money/cents.ts";
 import type { ExtractedProduct } from "./products.types.ts";
 
 // Record<string, unknown> = objeto com chaves string e valores ainda não
@@ -22,7 +23,7 @@ type JsonObject = Record<string, unknown>;
 
 // O preço e sua moeda viajam juntos para não misturar ofertas diferentes.
 interface OfferDetails {
-  price: string | null;
+  priceCents: bigint | null;
   currency: string | null;
   isPriceRange: boolean; // Impede que uma faixa vire preço exato via meta tag global.
 }
@@ -157,19 +158,19 @@ export function parseProductPage(
     imageUrl = normalizeImageUrl(readMetaContent("og:image"), finalUrl);
   }
 
-  let price = offer.price;
+  let priceCents = offer.priceCents;
   let currency = offer.currency;
   // A meta global pode descrever a variante padrão ou o menor valor de uma
   // faixa. Só usamos esse preço quando o link não escolhe uma variante e o
   // JSON-LD não indica faixa de preços.
   if (selection === null && !offer.isPriceRange) {
-    const metaPrice = normalizePrice(readMetaContent("product:price:amount"));
+    const metaPrice = parsePriceCents(readMetaContent("product:price:amount"));
     const metaCurrency = normalizeCurrency(readMetaContent("product:price:currency"));
-    if (price === null && metaPrice !== null) {
+    if (priceCents === null && metaPrice !== null) {
       // Ao escolher preço da meta, sua moeda deve vir do mesmo contexto.
-      price = metaPrice;
+      priceCents = metaPrice;
       currency = metaCurrency;
-    } else if (currency === null && (price === null || metaPrice === price)) {
+    } else if (currency === null && (priceCents === null || metaPrice === priceCents)) {
       // Preço direto 100 não pode receber USD de uma meta que informa 50 USD.
       // Sem preço em lugar algum, a moeda pode ser conhecida independentemente.
       currency = metaCurrency;
@@ -187,7 +188,11 @@ export function parseProductPage(
   // 5. MONTAR A SAÍDA PREVISÍVEL DO LISTED
   // A loja pode ter centenas de propriedades; a API devolve somente estas.
   // null informa "não encontramos". O service decide complete/partial/failed.
-  return { url: originalUrl, name, imageUrl, price, currency, storeName };
+  // O scraper compara as ofertas em bigint. Só convertemos para JSON depois
+  // de conferir a mesma faixa aceita no cadastro, que cabe em number exato.
+  const canSavePrice = priceCents !== null && priceCents <= BigInt(MAX_PRICE_CENTS);
+  const extractedPriceCents = canSavePrice ? Number(priceCents) : null;
+  return { url: originalUrl, name, imageUrl, priceCents: extractedPriceCents, currency, storeName };
 }
 
 /**
@@ -288,25 +293,25 @@ function matchesVariant(variant: JsonObject, selection: VariantSelection, pageUr
  *
  * Quando há várias ofertas concretas, usamos a primeira que informa preço válido.
  * Não calculamos menor preço e não pegamos moeda de uma oferta vizinha.
- * Uma faixa 90–120 não é preço exato: mantemos price null e preservamos a moeda.
+ * Uma faixa 90–120 não é preço exato. O preço fica null e preservamos a moeda.
  * Quando lowPrice e highPrice são iguais, há um único valor e podemos usá-lo.
  */
 function readOfferDetails(value: unknown): OfferDetails {
   if (Array.isArray(value)) {
-    let offerWithoutPrice: OfferDetails = { price: null, currency: null, isPriceRange: false };
+    let offerWithoutPrice: OfferDetails = { priceCents: null, currency: null, isPriceRange: false };
     for (const item of value) {
       const details = readOfferDetails(item);
-      if (details.price !== null) return details;
+      if (details.priceCents !== null) return details;
       // Sem um preço exato, guardamos o item inteiro quando ele indica
       // uma faixa ou quando o candidato anterior ainda não tem moeda.
       if (details.isPriceRange || offerWithoutPrice.currency === null) offerWithoutPrice = details;
     }
     return offerWithoutPrice;
   }
-  if (!isJsonObject(value)) return { price: null, currency: null, isPriceRange: false };
+  if (!isJsonObject(value)) return { priceCents: null, currency: null, isPriceRange: false };
 
   // 1. A oferta pode declarar preço e moeda diretamente.
-  const directPrice = normalizePrice(value.price);
+  const directPrice = parsePriceCents(value.price);
   let currency = normalizeCurrency(value.priceCurrency);
 
   // 2. priceSpecification também pode declarar um preço, como objeto ou lista.
@@ -326,13 +331,13 @@ function readOfferDetails(value: unknown): OfferDetails {
     const isDeliveryCharge = hasEntityType(specification, "DeliveryChargeSpecification");
     if (!isUnitPrice || isDeliveryCharge || isCrossedOutPrice) continue;
 
-    const specificationPrice = normalizePrice(specification.price);
+    const specificationPrice = parsePriceCents(specification.price);
     if (specificationPrice === null) continue;
     if (directPrice === null) {
       // A primeira especificação com preço válido fornece o par. Quando ela
       // omite a moeda, a moeda declarada pela própria oferta serve de apoio.
       const specificationCurrency = normalizeCurrency(specification.priceCurrency);
-      return { price: specificationPrice, currency: specificationCurrency ?? currency, isPriceRange: false };
+      return { priceCents: specificationPrice, currency: specificationCurrency ?? currency, isPriceRange: false };
     }
     if (specificationPrice === directPrice && currency === null) {
       // Ex.: a moeda de um preço 50 não completa o preço direto de 100.
@@ -340,25 +345,25 @@ function readOfferDetails(value: unknown): OfferDetails {
     }
   }
 
-  if (directPrice !== null) return { price: directPrice, currency, isPriceRange: false };
-  if (!hasEntityType(value, "AggregateOffer")) return { price: null, currency, isPriceRange: false };
+  if (directPrice !== null) return { priceCents: directPrice, currency, isPriceRange: false };
+  if (!hasEntityType(value, "AggregateOffer")) return { priceCents: null, currency, isPriceRange: false };
 
   // 3. AggregateOffer agrupa ofertas. Uma oferta interna pode informar um
   // valor exato. Se faltar esse valor, examinamos os extremos da faixa.
   const nestedOffer = readOfferDetails(value.offers);
-  if (nestedOffer.price !== null) {
-    return { price: nestedOffer.price, currency: nestedOffer.currency ?? currency, isPriceRange: false };
+  if (nestedOffer.priceCents !== null) {
+    return { priceCents: nestedOffer.priceCents, currency: nestedOffer.currency ?? currency, isPriceRange: false };
   }
 
   const aggregateCurrency = currency ?? nestedOffer.currency;
-  const lowPrice = normalizePrice(value.lowPrice);
-  const highPrice = normalizePrice(value.highPrice);
+  const lowPrice = parsePriceCents(value.lowPrice);
+  const highPrice = parsePriceCents(value.highPrice);
   if (lowPrice !== null && lowPrice === highPrice) {
-    return { price: lowPrice, currency: aggregateCurrency, isPriceRange: false };
+    return { priceCents: lowPrice, currency: aggregateCurrency, isPriceRange: false };
   }
 
   const isPriceRange = lowPrice !== null || highPrice !== null || nestedOffer.isPriceRange;
-  return { price: null, currency: aggregateCurrency, isPriceRange };
+  return { priceCents: null, currency: aggregateCurrency, isPriceRange };
 }
 
 /** BRL/brl → BRL. Confere três letras, sem inferir moeda pelo país ou símbolo $. */
@@ -443,13 +448,13 @@ function normalizeImageUrl(value: unknown, pageUrl: string): string | null {
 }
 
 /**
- * Padroniza preço como string decimal: "1.299,90" → "1299.90".
+ * Converte o preço da loja em centavos. "1.299,90" vira 129990n.
  * O schema.org normalmente já fornece "279.90"; alguns sites usam vírgula.
  * Não usamos parseFloat: ele leria "279,90" como 279 e descartaria os centavos.
  * Não fazemos cálculos com number: floats têm aproximações (0.1 + 0.2, por exemplo).
  * Retornamos null para formatos que não reconhecemos, em vez de adivinhar.
  */
-function normalizePrice(value: unknown): string | null {
+function parsePriceCents(value: unknown): bigint | null {
   const text = readText(value);
   if (text === null) return null;
   let price = text;
@@ -469,10 +474,6 @@ function normalizePrice(value: unknown): string | null {
   // ? torna a parte decimal opcional. Texto como "R$ 279" não passa.
   const isDecimal = /^\d+(?:\.\d{1,2})?$/.test(price);
   if (!isDecimal) return null;
-  // Uma forma única facilita comparar lowPrice="99.9" e highPrice="99.90".
-  // split separa inteiro/centavos; padEnd completa casas sem calcular com float.
-  const parts = price.split(".");
-  const integer = (parts[0] ?? "0").replace(/^0+(?=\d)/, "");
-  const fraction = (parts[1] ?? "").padEnd(2, "0");
-  return `${integer}.${fraction}`;
+  // Comparar inteiros em centavos trata "99.9" e "99.90" como o mesmo preço.
+  return decimalToCents(price);
 }

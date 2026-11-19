@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_PRICE_CENTS } from "../../shared/money/cents.ts";
 
 const webUrl = z.string().trim().max(2048).pipe(z.url({ protocol: /^https?$/ }));
 
@@ -9,9 +10,9 @@ const productFields = {
   // Texto vazio continua inválido: para remover a URL, envie null.
   url: webUrl.nullish(),
   imageUrl: webUrl.nullish(),
-  // Decimal(12,2) comporta até dez dígitos antes do ponto e dois depois.
-  // O texto segue para o Prisma sem passar por number ou arredondamento.
-  price: z.string().trim().regex(/^\d{1,10}(\.\d{1,2})?$/).nullish(),
+  // 27990 representa 279,90 na moeda informada. A validação aceita JSON
+  // numérico inteiro na faixa da coluna de preços e preserva null.
+  priceCents: z.int().min(0).max(MAX_PRICE_CENTS).nullish(),
   currency: z.string().trim().toUpperCase().regex(/^[A-Z]{3}$/).nullish(),
   storeName: z.string().trim().min(1).max(160).nullish(),
 };
@@ -22,7 +23,7 @@ export const createSavedProductSchema = z.strictObject({
 });
 
 // .partial torna todos os campos opcionais. Ausência preserva o dado atual,
-// e null limpa um campo que aceita nulo, como price. O ID da lista fica fora.
+// e null limpa um campo que aceita nulo, como priceCents. O ID da lista fica fora.
 export const updateSavedProductSchema = z.strictObject({
   ...productFields,
   // Recebemos o estado desejado, não um comando para inverter o estado atual.

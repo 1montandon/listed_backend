@@ -1,8 +1,8 @@
 import { Prisma, type PrismaClient, type SavedProduct } from "../../generated/prisma/client.ts";
 import type { CreateSavedProductInput, UpdateSavedProductInput } from "./saved-products.schema.ts";
 
-// Omit reaproveita os campos da linha do Prisma, trocando só o tipo de price.
-export type SavedProductView = Omit<SavedProduct, "price"> & { price: string | null };
+// Prisma lê BIGINT como bigint. A API envia centavos inteiros como número JSON.
+export type SavedProductView = Omit<SavedProduct, "priceCents"> & { priceCents: number | null };
 
 type MoveResult =
   | { status: "moved"; product: SavedProductView }
@@ -11,8 +11,10 @@ type MoveResult =
   | { status: "same-wishlist" }
   | { status: "conflict" };
 
-function toView(row: SavedProduct): SavedProductView {
-  return { ...row, price: row.price?.toFixed(2) ?? null };
+function toView({ priceCents, ...product }: SavedProduct): SavedProductView {
+  // A restrição no banco garante que o inteiro cabe em number sem perder centavos.
+  const jsonPriceCents = priceCents === null ? null : Number(priceCents);
+  return { ...product, priceCents: jsonPriceCents };
 }
 
 export class SavedProductsRepository {
@@ -27,7 +29,7 @@ export class SavedProductsRepository {
           // No PATCH abaixo, a ausência precisa continuar significando "preservar".
           url: input.url ?? null,
           imageUrl: input.imageUrl ?? null,
-          price: input.price ?? null,
+          priceCents: input.priceCents == null ? null : BigInt(input.priceCents),
           currency: input.currency ?? null,
           storeName: input.storeName ?? null,
           // connect vincula uma lista existente. O ID identifica a lista, e
@@ -70,7 +72,9 @@ export class SavedProductsRepository {
     if (input.name !== undefined) data.name = input.name;
     if (input.url !== undefined) data.url = input.url;
     if (input.imageUrl !== undefined) data.imageUrl = input.imageUrl;
-    if (input.price !== undefined) data.price = input.price;
+    if (input.priceCents !== undefined) {
+      data.priceCents = input.priceCents === null ? null : BigInt(input.priceCents);
+    }
     if (input.currency !== undefined) data.currency = input.currency;
     if (input.storeName !== undefined) data.storeName = input.storeName;
     // false é um valor válido; checar apenas `if (input.isPurchased)` perderia
