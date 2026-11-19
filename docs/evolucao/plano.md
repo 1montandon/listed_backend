@@ -1,6 +1,6 @@
 # Evolução do Listed — backend
 
-**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 commitado em `51097f0`; E4.1 commitado em `7c99bdf`; E4.2 validado e aprovado para commit. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
+**Planejamento:** 17/11/2026. **Atualizado:** 18/11/2026. **Estado:** E1.1 commitado; E1.2 commitado no backend; E2 commitado em `a4d6d71`; E3 commitado em `51097f0`; E4.1 commitado em `7c99bdf`; E4.2 commitado em `ba211c9`; E4.3 em definição. Integração com o frontend pendente. O [PLAN.md](../../PLAN.md) é o índice principal. Este documento detalha o trabalho do backend; os mesmos IDs organizam o plano de evolução no repositório `listed_frontend`.
 
 ## 1. Como executar e revisar
 
@@ -77,7 +77,7 @@ Moeda padrão BRL; escolhas BRL/USD/EUR. Definir como responder a clientes antig
 
 **Andamento E4.1:** backend commitado em `7c99bdf`; [revisão de comprado](etapa-04-comprado-e-totais/01-comprado.md) documenta o contrato. Migração aplicada localmente. Frontend não integrado.
 
-**Andamento E4.2:** backend validado pelo usuário. [Revisão dos totais](etapa-04-comprado-e-totais/02-totais-sem-cambio.md). Preço sem moeda e moeda diferente são informados como exclusões, sem presumir BRL. Usar fixture identificada para testes de taxas e registrar separadamente a consulta real. Chave de provedor não deve ir para o frontend. Em E4.2, a agregação ocorre no service e é exposta pela rota de totais; o provedor de câmbio ainda será escolhido.
+**Andamento E4.2:** backend commitado em `ba211c9`. [Revisão dos totais](etapa-04-comprado-e-totais/02-totais-sem-cambio.md). Preço sem moeda e moeda diferente são informados como exclusões, sem presumir BRL. Usar fixture identificada para testes de taxas e registrar separadamente a consulta real. Chave de provedor não deve ir para o frontend. Em E4.2, a agregação ocorre no service e é exposta pela rota de totais; o provedor de câmbio ainda será escolhido.
 
 ### E5 — Imagens R2 (didático)
 
@@ -126,4 +126,4 @@ Executar testes relevantes por mudança e registrar comandos reais; backend usa 
 
 Pendências técnicas ficam no checkpoint correspondente: formato da operação de mover; ordem/nulos de miniaturas; username legado/regras; moedas legadas; provedor/cache/arredondamento de câmbio; acesso/limites/limpeza R2; provedor de e-mail e prazos; efeito de revogação de sessão; contrato de convites e acesso público; conteúdo legal/domínios. Não reabrir decisões de produto já fechadas: 1:N, movimento por atualização do vínculo, username obrigatório, comprado binário e moedas BRL/USD/EUR.
 
-**Próximo passo:** escolher o provedor e a política de consulta de E4.3 com o usuário. A integração coordenada no frontend permanece pendente para E1.1, E1.2, E2, E3 e E4.
+**Próximo passo.** Escolher o provedor e a política de consulta de E4.3 com o usuário. [Comparação dos provedores](etapa-04-comprado-e-totais/03-consulta-de-cambio.md)

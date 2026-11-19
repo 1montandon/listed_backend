@@ -4,25 +4,54 @@ API REST do Listed para contas, wishlists privadas e produtos. O usuário pode g
 
 ## Rodar localmente
 
-Requisitos: Node.js 26, npm e Docker com Compose. Execute os comandos abaixo na raiz do repositório, em PowerShell.
+Use Node.js 26, npm e Docker com Compose. Na raiz do repositório, crie o `.env` de desenvolvimento uma vez.
+
+No Windows, em PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
+```
+
+No Ubuntu, em Bash:
+
+```bash
+cp .env.example .env
+```
+
+Em ambos os ambientes, instale as dependências e aplique as migrações ao banco local.
+
+```text
 npm ci
 docker compose up -d --wait postgres
 npm run db:generate
 npm run db:deploy
+```
+
+No Windows, instale o Chromium com:
+
+```powershell
 npm run browser:install
+```
+
+No Ubuntu, instale o Chromium e as bibliotecas do sistema usadas pelo Playwright. [Dependências de navegador do Playwright](https://playwright.dev/docs/browsers#install-system-dependencies)
+
+```bash
+npx playwright install --with-deps chromium
+```
+
+Em seguida, rode a API.
+
+```text
 npm run dev
 ```
 
-O PostgreSQL local fica em `127.0.0.1:5433`. `browser:install` baixa o Chromium usado pela extração e pelos testes de navegador. O arquivo [`.env.example`](.env.example) reúne as variáveis de desenvolvimento. Ajuste `FRONTEND_ORIGIN` se o frontend local usar outra URL.
+O PostgreSQL local fica em `127.0.0.1:5433`. O Chromium é usado pela extração e pelos testes de navegador. O arquivo [`.env.example`](.env.example) reúne as variáveis de desenvolvimento. Ajuste `FRONTEND_ORIGIN` se o frontend local usar outra URL.
 
-Com a API na porta padrão, verifique o processo HTTP e a conexão com o banco.
+Com a API na porta padrão, verifique o processo HTTP e a conexão com o banco. No Windows, use `curl.exe`.
 
-```powershell
-curl.exe http://localhost:3333/api/v1/health
-curl.exe http://localhost:3333/api/v1/ready
+```bash
+curl http://localhost:3333/api/v1/health
+curl http://localhost:3333/api/v1/ready
 ```
 
 ## API
@@ -57,7 +86,7 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 
 ## Documentação
 
-- [Plano do backend](PLAN.md) — escopo, arquitetura, andamento e decisões pendentes.
+- [Plano do backend](PLAN.md) — ponto de retomada, escopo, arquitetura e decisões pendentes.
 
 ### Etapas iniciais
 
@@ -76,3 +105,4 @@ Erros HTTP conhecidos retornam `{ "error": { "code": "...", "message": "..." } }
 - [E3 — Perfil](docs/evolucao/etapa-03-perfil/01-perfil.md) — username, bio e moeda preferida.
 - [E4.1 — Comprado](docs/evolucao/etapa-04-comprado-e-totais/01-comprado.md) — estado de compra no produto.
 - [E4.2 — Totais sem câmbio](docs/evolucao/etapa-04-comprado-e-totais/02-totais-sem-cambio.md) — soma em uma moeda e itens excluídos.
+- [E4.3 — Consulta de câmbio](docs/evolucao/etapa-04-comprado-e-totais/03-consulta-de-cambio.md) — proposta para escolha do provedor e da política de cache.

@@ -1,5 +1,13 @@
 # Plano do backend do Listed
 
+## Onde retomar
+
+O backend chegou ao **E4.3 — Escolha e consulta de câmbio**. E4.2, os totais sem câmbio, está concluído em `ba211c9`. A API já usa `priceCents` e `amountCents` como inteiros. Na última validação do backend, typecheck, build e 77 testes passaram.
+
+A proposta recomenda Frankfurter v2 e descreve consulta, cache e tratamento de indisponibilidade. A implementação de E4.3 começa após o usuário definir o provedor e a política. A conversão dos totais é o checkpoint E4.4. [Proposta de E4.3](docs/evolucao/etapa-04-comprado-e-totais/03-consulta-de-cambio.md)
+
+Em um checkout novo, siga o [setup do README](README.md#rodar-localmente). Depois de cada validação, mantenha este ponto de retomada alinhado ao próximo checkpoint.
+
 ## 1. Visão geral e escopo
 
 O backend do MVP gerencia contas, sessões, perfil e wishlists privadas. A pessoa pode colar o link de um produto, revisar a prévia e salvar os dados, ou preencher o formulário manualmente. A API permite consultar, editar e remover os itens salvos. A recuperação de senha e as verificações operacionais completam a preparação para usuários reais.
@@ -63,7 +71,7 @@ O schema Zod concentra o contrato de entrada. Quando há transformação ou coer
 
 ### Evolução após o MVP privado
 
-Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi validado e commitado em `51097f0`; E4.1 foi commitado em `7c99bdf`; E4.2 foi validado e aprovado para commit; a integração com o frontend continua pendente.
+Os IDs E1–E8 são compartilhados com o frontend. Preservam a numeração e as revisões das entregas anteriores. E1.1 foi implementado, validado e commitado no backend em `678aab2`. E1.2 foi validado e commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi validado e commitado em `51097f0`; E4.1 foi commitado em `7c99bdf`; E4.2 foi commitado em `ba211c9`.
 
 | Ordem | Bloco | Ritmo |
 | --- | --- | --- |
@@ -99,10 +107,8 @@ Nos blocos E4, E5, recuperação de E6 e E7, esse ciclo vale para **cada checkpo
 | --- | --- |
 | Provedor de e-mail transacional e remetente, compartilhados por recuperação e convites. | E6, antes de integrar o envio; reutilizar em E7. |
 | Domínios de produção do frontend e da API, incluindo origem e cookies. | Antes do envio de links reais em E6/E7 e da conclusão de E8. |
-| API de câmbio, atualização/cache e tratamento de indisponibilidade. | Escolher com o usuário em E4.3; BRL, USD e EUR já confirmados. |
+| API de câmbio, atualização/cache e tratamento de indisponibilidade. | Escolher com o usuário em E4.3. [Comparação e proposta](docs/evolucao/etapa-04-comprado-e-totais/03-consulta-de-cambio.md) |
 | Preços e moedas legados. | Definir antes de E4, preservando dados. |
 | Entrega e acesso às imagens, limites e limpeza de objetos R2. | E5.1, considerando desde o início listas privadas e links públicos revogáveis. |
 | Validade dos convites, reenvio, aceite e efeito da revogação de sessões. | Revisões técnicas de E6/E7. |
 | Conteúdo e destinos de termos e privacidade. | E8, antes da publicação; não fabricar documentos finais ou consentimento. |
-
-E1.2 do backend foi commitado em `5d57dd7`. E2 foi commitado em `a4d6d71`. E3 foi commitado em `51097f0`. E4.1 foi commitado em `7c99bdf`. E4.2 foi validado: [totais sem câmbio](docs/evolucao/etapa-04-comprado-e-totais/02-totais-sem-cambio.md). A integração do frontend para E1.1, E1.2, E2, E3 e E4.1 permanece pendente.
